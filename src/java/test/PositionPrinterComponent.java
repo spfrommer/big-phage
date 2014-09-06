@@ -1,4 +1,4 @@
-package engine.core.imp.render;
+package test;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -7,12 +7,12 @@ import java.util.Set;
 import engine.core.framework.Component;
 import engine.core.imp.physics.Vector;
 
-public class RenderComponent extends Component {
+public class PositionPrinterComponent extends Component {
 	private static final Set<String> IDENTIFIERS = new HashSet<String>(Arrays.asList("position"));
 
 	@Override
 	public void update(float time) {
-		// System.out.println("Updating renderer with pos: " + getData("position"));
+		System.out.println(this.getData("position"));
 	}
 
 	@Override
