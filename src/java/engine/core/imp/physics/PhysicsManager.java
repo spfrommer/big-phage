@@ -44,7 +44,7 @@ public class PhysicsManager extends DataManager {
 
 	@Override
 	public void update(float time) {
-		m_world.step(1f / 60f, 6, 2);
+		m_world.step(1f / 60f, 20, 20);
 	}
 
 	@Override

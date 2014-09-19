@@ -1,5 +1,7 @@
 package test;
 
+import java.awt.Graphics2D;
+
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
@@ -10,29 +12,51 @@ import org.jbox2d.dynamics.FixtureDef;
 import engine.core.framework.Entity;
 import engine.core.framework.World;
 import engine.core.imp.physics.PhysicsManager;
+import engine.core.imp.render.GraphicsContext;
+import engine.core.imp.render.Painter;
+import engine.core.imp.render.RenderComponent;
+import engine.core.imp.render.SWINGDisplay;
 
-public class FrameworkTest {
-	public static void main(String[] main) {
-		World world = new World();
-		PhysicsManager physics = new PhysicsManager();
-		world.addDataManager(physics);
+public class FrameworkTest implements Painter {
+	private World m_world = new World();
+	private PhysicsManager physics = new PhysicsManager();
+	private GraphicsContext m_graphics = new GraphicsContext();
+
+	public FrameworkTest() {
+		SWINGDisplay display = new SWINGDisplay();
+		display.setSize(500, 500);
+		display.setVisible(true);
+		display.addPainter(this);
+
+		m_world.addDataManager(physics);
 
 		Entity entity = new Entity();
-		entity.addComponent(new PositionPrinterComponent());
+		entity.addComponent(new RenderComponent(m_graphics));
+		// entity.addComponent(new PositionPrinterComponent());
 
 		Body body = physics.setBody(entity, makeBodyDef(0, -10, BodyType.DYNAMIC));
 		body.createFixture(makeRectangularFixtureDef(0, 0, 5, 5, 0));
 
-		world.addEntity(entity);
+		m_world.addEntity(entity);
 
 		while (true) {
-			world.update(1);
+			display.repaint();
 			try {
-				Thread.sleep(16);
+				Thread.sleep(5);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	private long lastPaint = System.currentTimeMillis();
+
+	@Override
+	public void paint(Graphics2D g2d) {
+		System.out.println(System.currentTimeMillis() - lastPaint);
+		m_graphics.graphics = g2d;
+		m_world.update(1);
+		lastPaint = System.currentTimeMillis();
 	}
 
 	public static BodyDef makeBodyDef(float x, float y, BodyType type) {
@@ -52,6 +76,9 @@ public class FrameworkTest {
 		return fixtureDef;
 	}
 
+	public static void main(String[] main) {
+		new FrameworkTest();
+	}
 	/*public static void testPhysics() {
 		// Static Body
 		Vec2 gravity = new Vec2(0, -10);
