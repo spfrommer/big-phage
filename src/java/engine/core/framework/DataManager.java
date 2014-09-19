@@ -25,7 +25,7 @@ public abstract class DataManager {
 
 	public abstract void setData(Entity entity, String identifier, Object data);
 
-	public abstract void update(float time);
+	protected abstract void update(float time);
 
 	public abstract void updateData(Entity entity, String identifier);
 

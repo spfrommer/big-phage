@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import engine.core.framework.Component;
-import engine.core.imp.physics.Vector;
+import engine.core.imp.physics.Vector2f;
 
 public class PositionPrinterComponent extends Component {
 	private static final Set<String> IDENTIFIERS = new HashSet<String>(Arrays.asList("position"));
@@ -23,7 +23,7 @@ public class PositionPrinterComponent extends Component {
 	@Override
 	public Object createObjectFor(String identifier) {
 		if (identifier.equals("position"))
-			return new Vector(0, 0);
+			return new Vector2f(0, 0);
 
 		return null;
 	}

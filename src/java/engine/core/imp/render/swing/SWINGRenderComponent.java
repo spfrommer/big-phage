@@ -1,23 +1,23 @@
-package engine.core.imp.render;
+package engine.core.imp.render.swing;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 import engine.core.framework.Component;
-import engine.core.imp.physics.Vector;
+import engine.core.imp.physics.Vector2f;
 
-public class RenderComponent extends Component {
-	private static final Set<String> IDENTIFIERS = new HashSet<String>(Arrays.asList("position"));
+public class SWINGRenderComponent extends Component {
+	private static final Set<String> IDENTIFIERS = new HashSet<String>(Arrays.asList("sys_position"));
 	private GraphicsContext m_context;
 
-	public RenderComponent(GraphicsContext context) {
+	public SWINGRenderComponent(GraphicsContext context) {
 		m_context = context;
 	}
 
 	@Override
 	public void update(float time) {
-		Vector position = (Vector) getData("position");
+		Vector2f position = (Vector2f) getData("sys_position");
 		System.out.println("Rendering: " + position.y);
 		m_context.graphics.drawOval((int) (position.x - 5), (int) (-position.y - 5), 10, 10);
 	}
@@ -29,8 +29,8 @@ public class RenderComponent extends Component {
 
 	@Override
 	public Object createObjectFor(String identifier) {
-		if (identifier.equals("position"))
-			return new Vector(0, 0);
+		if (identifier.equals("sys_position"))
+			return new Vector2f(0, 0);
 
 		return null;
 	}

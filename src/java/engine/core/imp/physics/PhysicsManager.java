@@ -15,7 +15,7 @@ import engine.core.framework.DataManager;
 import engine.core.framework.Entity;
 
 public class PhysicsManager extends DataManager {
-	private static final Set<String> IDENTIFIERS = new HashSet<String>(Arrays.asList("position"));
+	private static final Set<String> IDENTIFIERS = new HashSet<String>(Arrays.asList("sys_position", "sys_rotation"));
 	private Map<Entity, Body> m_bodies = new HashMap<Entity, Body>();
 	private World m_world = new World(new Vec2(0, -10));
 
@@ -50,13 +50,19 @@ public class PhysicsManager extends DataManager {
 	@Override
 	public void updateData(Entity entity, String identifier) {
 		Body body = m_bodies.get(entity);
-		// System.out.println(body.getPosition().y);
-		if (identifier.equals("position"))
-			entity.directSet("position", new Vector(body.getPosition().x, body.getPosition().y));
+		if (identifier.equals("sys_position")) {
+			entity.directSet("sys_position", new Vector2f(body.getPosition().x, body.getPosition().y));
+		}
+		if (identifier.equals("sys_rotation"))
+			entity.directSet("sys_rotation", (double) body.getAngle());
 	}
 
 	@Override
 	public void setData(Entity entity, String identifier, Object data) {
-
+		Body body = m_bodies.get(entity);
+		if (identifier.equals("sys_position")) {
+			body.m_xf.p.set(((Vector2f) data).x, ((Vector2f) data).y);
+			updateData(entity, identifier);
+		}
 	}
 }

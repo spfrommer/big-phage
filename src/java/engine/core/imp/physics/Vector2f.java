@@ -1,10 +1,10 @@
 package engine.core.imp.physics;
 
-public class Vector {
-	public double x;
-	public double y;
+public class Vector2f {
+	public float x;
+	public float y;
 
-	public Vector(double x, double y) {
+	public Vector2f(float x, float y) {
 		this.x = x;
 		this.y = y;
 	}

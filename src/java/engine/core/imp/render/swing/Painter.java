@@ -1,4 +1,4 @@
-package engine.core.imp.render;
+package engine.core.imp.render.swing;
 
 import java.awt.Graphics2D;
 
