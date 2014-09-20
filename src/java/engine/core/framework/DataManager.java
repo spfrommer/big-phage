@@ -26,6 +26,11 @@ public abstract class DataManager {
 		}
 	}
 
+	/**
+	 * Called when an Entity is added with fields we can set.
+	 * 
+	 * @param entity
+	 */
 	public abstract void entityRegistered(Entity entity);
 
 	public abstract Set<String> getDataIdentifiers();

@@ -25,6 +25,8 @@ public class SystemFieldInitializer implements FieldInitializer {
 			return 0;
 		if (identifier.equals("sys_material"))
 			return MaterialFactory.createBasicMaterial();
+		if (identifier.equals("sys_dimensions"))
+			return new Vector2f(1, 1);
 		return null;
 	}
 }
