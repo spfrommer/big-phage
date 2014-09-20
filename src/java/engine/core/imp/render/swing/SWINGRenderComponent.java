@@ -23,15 +23,7 @@ public class SWINGRenderComponent extends Component {
 	}
 
 	@Override
-	public Set<String> getRequiredIdentifiers() {
+	public Set<String> getDataIdentifiers() {
 		return IDENTIFIERS;
-	}
-
-	@Override
-	public Object createObjectFor(String identifier) {
-		if (identifier.equals("sys_position"))
-			return new Vector2f(0, 0);
-
-		return null;
 	}
 }

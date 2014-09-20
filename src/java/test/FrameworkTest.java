@@ -9,6 +9,7 @@ import org.jbox2d.dynamics.FixtureDef;
 
 import engine.core.framework.Entity;
 import engine.core.framework.World;
+import engine.core.imp.SystemFieldInitializer;
 import engine.core.imp.physics.PhysicsManager;
 import engine.core.imp.render.lwjgl.RenderComponent;
 import glextra.renderer.LWJGLRenderer2D;
@@ -29,9 +30,10 @@ public class FrameworkTest {
 		LWJGLRenderer2D renderer = LWJGLRenderer2D.getInstance();
 		renderer.init(-100f, 100f, 100f, -100f);
 
+		m_world.addFieldInitializer(new SystemFieldInitializer());
 		m_world.addDataManager(physics);
 
-		Entity entity = new Entity();
+		Entity entity = new Entity(m_world);
 		entity.addComponent(new RenderComponent(renderer));
 
 		Body body = physics.setBody(entity, makeBodyDef(0, 0, BodyType.DYNAMIC));

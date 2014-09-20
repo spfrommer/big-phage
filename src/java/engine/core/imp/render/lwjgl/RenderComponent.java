@@ -22,7 +22,7 @@ public class RenderComponent extends Component {
 	@Override
 	public void update(float time) {
 		Vector2f position = (Vector2f) getData("sys_position");
-		double rotation = (Double) getData("sys_rotation");
+		// double rotation = (Double) getData("sys_rotation");
 		Material mat = (Material) getData("sys_material");
 
 		m_renderer.setMaterial(mat);
@@ -36,18 +36,7 @@ public class RenderComponent extends Component {
 	}
 
 	@Override
-	public Set<String> getRequiredIdentifiers() {
+	public Set<String> getDataIdentifiers() {
 		return IDENTIFIERS;
-	}
-
-	@Override
-	public Object createObjectFor(String identifier) {
-		if (identifier.equals("sys_position"))
-			return new Vector2f(0, 0);
-		if (identifier.equals("sys_rotation"))
-			return 0;
-		if (identifier.equals("sys_material"))
-			return MaterialFactory.createBasicMaterial();
-		return null;
 	}
 }

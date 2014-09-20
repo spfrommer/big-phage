@@ -19,7 +19,7 @@ public abstract class Component {
 
 	public abstract void update(float time);
 
-	public abstract Set<String> getRequiredIdentifiers();
+	public abstract Set<String> getDataIdentifiers();
 
-	public abstract Object createObjectFor(String identifier);
+	// public abstract Object createObjectFor(String identifier);
 }

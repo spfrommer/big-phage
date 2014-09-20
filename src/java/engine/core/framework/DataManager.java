@@ -6,8 +6,15 @@ import java.util.List;
 import java.util.Set;
 
 public abstract class DataManager {
+	// just a list for calling entityRegistered() - not used in any other way
 	private List<Entity> m_registeredEntities = new ArrayList<Entity>();
 
+	/**
+	 * Check if the DataManager manages and fields of the Entity, and if it does, adds the Entity and calls
+	 * entityRegistered().
+	 * 
+	 * @param entity
+	 */
 	public final void checkRegister(Entity entity) {
 		if (!m_registeredEntities.contains(entity)) {
 			Set<String> intersection = new HashSet<String>(entity.getDataIdentifiers());

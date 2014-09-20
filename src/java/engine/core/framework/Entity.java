@@ -13,11 +13,15 @@ public class Entity {
 	private List<Component> m_components = new ArrayList<Component>();
 	private List<EntityListener> m_listeners = new ArrayList<EntityListener>();
 
+	public Entity(World world) {
+		m_world = world;
+	}
+
 	public void setWorld(World world) {
 		m_world = world;
 
 		for (Component c : m_components) {
-			Set<String> identifiers = c.getRequiredIdentifiers();
+			Set<String> identifiers = c.getDataIdentifiers();
 			for (String s : identifiers) {
 				DataManager registered = m_world.getRegisteredManager(s);
 				m_data.get(s).manager = registered;
@@ -27,16 +31,13 @@ public class Entity {
 	}
 
 	public void addComponent(Component c) {
-		Set<String> identifiers = c.getRequiredIdentifiers();
+		Set<String> identifiers = c.getDataIdentifiers();
 		for (String s : identifiers) {
 			if (!hasDataFor(s)) {
-				if (m_world != null) {
-					DataManager registered = m_world.getRegisteredManager(s);
-					m_data.put(s, new ManagedData(new Data(c.createObjectFor(s), 1), registered));
-					registered.checkRegister(this);
-				} else {
-					m_data.put(s, new ManagedData(new Data(c.createObjectFor(s), 1), DataManager.NONE));
-				}
+				DataManager registered = m_world.getRegisteredManager(s);
+				m_data.put(s, new ManagedData(new Data(m_world.getRegisteredInitializer(s).createObjectFor(s), 1),
+						registered));
+				registered.checkRegister(this);
 			} else {
 				m_data.get(s).data.componentsUsing++;
 			}
@@ -47,7 +48,7 @@ public class Entity {
 	}
 
 	public void removeComponent(Component c) {
-		Set<String> identifiers = c.getRequiredIdentifiers();
+		Set<String> identifiers = c.getDataIdentifiers();
 		for (String s : identifiers) {
 			m_data.get(s).data.componentsUsing--;
 			if (m_data.get(s).data.componentsUsing == 0) {
