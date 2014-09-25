@@ -1,9 +1,8 @@
 package test;
 
-import org.jbox2d.common.Vec2;
-import org.jbox2d.dynamics.Body;
+import java.awt.geom.Path2D;
+
 import org.jbox2d.dynamics.BodyType;
-import org.jbox2d.dynamics.joints.RevoluteJointDef;
 
 import engine.core.framework.Entity;
 import engine.core.framework.World;
@@ -11,19 +10,24 @@ import engine.core.imp.SystemFieldInitializer;
 import engine.core.imp.physics.PhysicsFactory;
 import engine.core.imp.physics.PhysicsManager;
 import engine.core.imp.physics.Vector2f;
+import engine.core.imp.render.lwjgl.LiquidRenderComponent;
+import engine.core.imp.render.lwjgl.MaterialFactory;
 import engine.core.presets.TexturedSolid;
 import glextra.renderer.LWJGLRenderer2D;
 import gltools.ResourceLocator;
 import gltools.ResourceLocator.ClasspathResourceLocator;
 import gltools.display.LWJGLDisplay;
+import gltools.input.Key;
+import gltools.input.KeyListener;
 import gltools.input.Keyboard;
+import gltools.texture.Color;
 import gltools.utils.Timer;
 
-public class PendulumBalancer {
+public class LiquidTest {
 	private World m_world = new World();
 	private PhysicsManager m_physics = new PhysicsManager();
 
-	public PendulumBalancer() {
+	public LiquidTest() {
 		startTest();
 	}
 
@@ -31,7 +35,7 @@ public class PendulumBalancer {
 		LWJGLDisplay display = makeDisplay("Framework Test");
 		Keyboard keyboard = getKeyboard(display);
 
-		LWJGLRenderer2D renderer = LWJGLRenderer2D.getInstance();
+		final LWJGLRenderer2D renderer = LWJGLRenderer2D.getInstance();
 		renderer.init(-5f, 5f, 5f, -5f);
 
 		m_world.addFieldInitializer(new SystemFieldInitializer());
@@ -42,15 +46,45 @@ public class PendulumBalancer {
 				BodyType.KINEMATIC, "Textures/metalplate.jpg");
 		m_world.addEntity(ground);
 
-		// make the pendulum
-		Entity pendulum = new TexturedSolid(m_world, m_physics, renderer, new Vector2f(0.1f, 1f), 0, new Vector2f(0.2f,
-				2f), BodyType.DYNAMIC, "Textures/pendulum.png");
-		m_world.addEntity(pendulum);
+		// make the walls
 
-		// create the joint
-		RevoluteJointDef revoluteDef = PhysicsFactory.makeRevoluteDef(m_physics.getBody(ground),
-				m_physics.getBody(pendulum), new Vector2f(0f, 0.5f), new Vector2f(0, -1f), false);
-		m_physics.createJoint(revoluteDef);
+		Entity wall1 = new TexturedSolid(m_world, m_physics, renderer, new Vector2f(1.75f, 1.5f), 0f, new Vector2f(
+				0.5f, 4f), BodyType.KINEMATIC, "Textures/metalplate.jpg");
+		m_world.addEntity(wall1);
+
+		Entity wall2 = new TexturedSolid(m_world, m_physics, renderer, new Vector2f(-1.75f, 1.5f), 0f, new Vector2f(
+				0.5f, 4f), BodyType.KINEMATIC, "Textures/metalplate.jpg");
+		m_world.addEntity(wall2);
+
+		keyboard.addListener(new KeyListener() {
+			@Override
+			public void keyReleased(Keyboard k, Key key) {
+
+			}
+
+			@Override
+			public void keyPressed(Keyboard k, Key key) {
+				Entity box = new TexturedSolid(m_world, m_physics, renderer, new Vector2f(
+						(float) (Math.random() - 0.5f) * 2f, 5f), 0f, new Vector2f(0.3f, 0.5f), BodyType.DYNAMIC,
+						"Textures/metalplate.jpg");
+				m_world.addEntity(box);
+			}
+		});
+
+		// make the liquid
+		Entity liquid = new Entity(m_world);
+		liquid.addComponent(new LiquidRenderComponent(renderer));
+		Path2D.Float path = new Path2D.Float();
+		float y = 0.5f;
+		float x = 0.0f;
+		path.moveTo(-1.5f + x, 0f + y);
+		path.lineTo(-1.5f + x, 4f + y);
+		path.lineTo(1.5f + x, 4f + y);
+		path.lineTo(1.5f + x, 0f + y);
+		// path.lineTo(-0.3f + x, 0.5f + y);
+		m_physics.createLiquid(liquid, PhysicsFactory.makeLiquidDef(path, 0.11f, 0.05f));
+		liquid.setData("sys_material", MaterialFactory.createBasicMaterial(new Color(0f, 0f, 1f)));
+		m_world.addEntity(liquid);
 
 		Timer timer = new Timer();
 		while (!keyboard.isKeyPressed(keyboard.getKey("ESCAPE")) && !display.closeRequested()) {
@@ -59,51 +93,15 @@ public class PendulumBalancer {
 			keyboard.poll();
 			renderer.clear();
 			renderer.startGeometry();
-			balancePendulum(ground, pendulum);
-			movePendulum(pendulum, keyboard);
 			m_world.update(0.0166666666666666f);
 			renderer.finishGeometry();
 			display.update(60);
 
-			float fps = 1 / timer.getDeltaSeconds();
+			/*float fps = 1 / timer.getDeltaSeconds();
 			if (fps != Float.POSITIVE_INFINITY)
 				System.out.println("FPS: " + fps);
-			System.out.println("-------------------------------------------------");
+			System.out.println("-------------------------------------------------");*/
 		}
-	}
-
-	private float ierror = 0;
-
-	private void balancePendulum(Entity ground, Entity pendulum) {
-		Body gBody = m_physics.getBody(ground);
-		Body pBody = m_physics.getBody(pendulum);
-
-		/*float perror = pBody.getAngle();
-		float derror = pBody.getAngularVelocity();
-		ierror += perror;
-		float correction = -perror * 30f + -ierror * 10f + (-derror * 1f);*/
-		float gx = gBody.getPosition().x;
-		float px = pBody.getPosition().x;
-		float perror = px - gx;
-		float derror = pBody.getLinearVelocity().x - gBody.getLinearVelocity().x;
-		ierror += perror;
-		float correction = perror * 30f + ierror * 10f + derror * 1f;
-
-		System.out.println("Proportional: " + perror);
-		System.out.println("Derivative: " + derror);
-		System.out.println("Integral: " + ierror);
-
-		gBody.setLinearVelocity(new Vec2(correction, 0));
-	}
-
-	private void movePendulum(Entity pendulum, Keyboard keyboard) {
-		Body pBody = m_physics.getBody(pendulum);
-		if (keyboard.isKeyPressed(keyboard.getKey("LEFT"))) {
-			pBody.applyAngularImpulse(0.2f);
-		}
-
-		if (keyboard.isKeyPressed(keyboard.getKey("RIGHT")))
-			pBody.applyAngularImpulse(-0.2f);
 	}
 
 	private static LWJGLDisplay makeDisplay(String title) {
@@ -127,7 +125,7 @@ public class PendulumBalancer {
 		return keyboard;
 	}
 
-	public static void main(String[] main) {
-		new PendulumBalancer();
+	public static void main(String[] args) {
+		new LiquidTest();
 	}
 }

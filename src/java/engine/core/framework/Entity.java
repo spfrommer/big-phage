@@ -89,14 +89,18 @@ public class Entity {
 
 	public void setData(String identifier, Object data) {
 		if (!hasDataFor(identifier)) {
-			m_data.put(identifier, new ManagedData(new Data(data, 0), m_world.getRegisteredManager(identifier)));
+			m_data.put(identifier, new ManagedData(new Data(null, 0), m_world.getRegisteredManager(identifier)));
 		}
 
 		m_data.get(identifier).manager.setData(this, identifier, data);
 	}
 
 	public void directSet(String identifier, Object data) {
-		m_data.get(identifier).data.data = data;
+		if (!hasDataFor(identifier)) {
+			m_data.put(identifier, new ManagedData(new Data(data, 0), m_world.getRegisteredManager(identifier)));
+		} else {
+			m_data.get(identifier).data.data = data;
+		}
 	}
 
 	public class ManagedData {

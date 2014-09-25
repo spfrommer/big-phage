@@ -25,16 +25,11 @@ public class SolidRenderComponent extends Component {
 		Vector2f dimensions = (Vector2f) getData("sys_dimensions");
 		double rotation = (Double) getData("sys_rotation");
 		Material mat = (Material) getData("sys_material");
-		// System.out.println(position);
-		// System.out.println(rotation);
-		// rotation = 45;
 
 		m_renderer.setMaterial(mat);
 		m_renderer.pushModel();
 		m_renderer.translate(position.x, position.y);
-		// m_renderer.translate(dimensions.x / 2, dimensions.y / 2);
 		m_renderer.rotate((float) (rotation));
-		// m_renderer.translate(-dimensions.x / 2, -dimensions.y / 2);
 		m_renderer.fillRect(-dimensions.x / 2, -dimensions.y / 2, dimensions.x, dimensions.y);
 		m_renderer.popModel();
 	}

@@ -13,6 +13,8 @@ import engine.core.imp.render.lwjgl.SolidRenderComponent;
 import glextra.renderer.LWJGLRenderer2D;
 
 public class TexturedSolid extends Entity {
+	private Body m_body;
+
 	public TexturedSolid(World world, PhysicsManager physics, LWJGLRenderer2D renderer, Vector2f position,
 			float rotation, Vector2f dimensions, BodyType type, String texture) {
 		super(world);
@@ -20,7 +22,7 @@ public class TexturedSolid extends Entity {
 		setData("sys_dimensions", dimensions);
 		setData("sys_material", MaterialFactory.createBasicMaterial(texture));
 
-		Body fbody = physics.createBody(this, PhysicsFactory.makeBodyDef(position, type, rotation));
-		fbody.createFixture(PhysicsFactory.makeRectangularFixtureDef(new Vector2f(0, 0), dimensions, 0));
+		m_body = physics.createBody(this, PhysicsFactory.makeBodyDef(position, type, rotation, 0f));
+		m_body.createFixture(PhysicsFactory.makeRectangularFixtureDef(dimensions, 0, 10, 0.3f, 0.1f));
 	}
 }
