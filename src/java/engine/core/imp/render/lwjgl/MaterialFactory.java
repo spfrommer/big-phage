@@ -1,5 +1,6 @@
 package engine.core.imp.render.lwjgl;
 
+import glextra.material.GlobalParams;
 import glextra.material.Material;
 import glextra.material.MaterialXMLLoader;
 import gltools.ResourceLocator;
@@ -27,7 +28,8 @@ public class MaterialFactory {
 
 		Material mat = null;
 		try {
-			mat = MaterialXMLLoader.s_load("Materials/2d.mat", locator).get(0);
+			//Hack global params in there for now
+			mat = MaterialXMLLoader.s_load("Materials/2d.mat", locator, GlobalParams.getInstance()).get(0);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ShaderCompileException e) {
