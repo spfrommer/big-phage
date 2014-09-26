@@ -19,11 +19,11 @@ import gltools.display.LWJGLDisplay;
 import gltools.input.Keyboard;
 import gltools.utils.Timer;
 
-public class PendulumBalancer {
+public class PendulumTest {
 	private World m_world = new World();
 	private PhysicsManager m_physics = new PhysicsManager();
 
-	public PendulumBalancer() {
+	public PendulumTest() {
 		startTest();
 	}
 
@@ -72,7 +72,8 @@ public class PendulumBalancer {
 		}
 	}
 
-	private float ierror = 0;
+	// private float ierror = 0;
+	private float lastperror = 0;
 
 	private void balancePendulum(Entity ground, Entity pendulum) {
 		Body gBody = m_physics.getBody(ground);
@@ -82,12 +83,12 @@ public class PendulumBalancer {
 		float derror = pBody.getAngularVelocity();
 		ierror += perror;
 		float correction = -perror * 30f + -ierror * 10f + (-derror * 1f);*/
-		float gx = gBody.getPosition().x;
-		float px = pBody.getPosition().x;
-		float perror = px - gx;
-		float derror = pBody.getLinearVelocity().x - gBody.getLinearVelocity().x;
-		ierror += perror;
-		float correction = perror * 30f + ierror * 10f + derror * 1f;
+		float perror = pBody.getLinearVelocity().x;
+		float ierror = pBody.getPosition().x;
+		float derror = (perror - lastperror) * 60f /*delta time*/;
+		float correction = perror * 1.0f + ierror * 1.0f + derror * 0.5f;
+
+		lastperror = perror;
 
 		System.out.println("Proportional: " + perror);
 		System.out.println("Derivative: " + derror);
@@ -128,6 +129,6 @@ public class PendulumBalancer {
 	}
 
 	public static void main(String[] main) {
-		new PendulumBalancer();
+		new PendulumTest();
 	}
 }

@@ -12,6 +12,8 @@ import org.jbox2d.dynamics.BodyType;
 import org.jbox2d.dynamics.FixtureDef;
 import org.jbox2d.dynamics.joints.RevoluteJointDef;
 
+import engine.core.imp.physics.liquid.LiquidDef;
+
 public class PhysicsFactory {
 	private PhysicsFactory() {
 

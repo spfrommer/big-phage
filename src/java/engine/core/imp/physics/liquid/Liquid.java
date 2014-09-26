@@ -1,4 +1,4 @@
-package engine.core.imp.physics;
+package engine.core.imp.physics.liquid;
 
 import java.util.List;
 
@@ -28,7 +28,8 @@ public class Liquid {
 				if (p1 != p2) {
 					Vec2 dist = p1.getPosition().sub(p2.getPosition());
 					if (dist.length() < m_particleSize * 10) {
-						p1.applyForceToCenter(dist.mul(0.1f / dist.lengthSquared()).mul(1.5f * p1.getMass()));
+						p1.applyForceToCenter(dist.mul(0.5f / (dist.lengthSquared() * dist.length())).mul(
+								1.5f * p1.getMass() * p2.getMass()));
 						// p1.applyForceToCenter(dist.mul(0.000001f / dist.length()));
 					}
 				}

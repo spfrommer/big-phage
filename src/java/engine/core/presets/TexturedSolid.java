@@ -23,6 +23,6 @@ public class TexturedSolid extends Entity {
 		setData("sys_material", MaterialFactory.createBasicMaterial(texture));
 
 		m_body = physics.createBody(this, PhysicsFactory.makeBodyDef(position, type, rotation, 0f));
-		m_body.createFixture(PhysicsFactory.makeRectangularFixtureDef(dimensions, 0, 10, 0.3f, 0.1f));
+		m_body.createFixture(PhysicsFactory.makeRectangularFixtureDef(dimensions, 0, 1.5f, 0.3f, 0.1f));
 	}
 }

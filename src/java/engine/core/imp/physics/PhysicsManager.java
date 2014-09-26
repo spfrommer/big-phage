@@ -19,6 +19,8 @@ import org.jbox2d.dynamics.joints.JointDef;
 
 import engine.core.framework.DataManager;
 import engine.core.framework.Entity;
+import engine.core.imp.physics.liquid.Liquid;
+import engine.core.imp.physics.liquid.LiquidDef;
 
 public class PhysicsManager extends DataManager {
 	private static final Set<String> IDENTIFIERS = new HashSet<String>(Arrays.asList("sys_type", "sys_position",
