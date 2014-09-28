@@ -11,6 +11,7 @@ import engine.core.imp.SystemFieldInitializer;
 import engine.core.imp.physics.PhysicsFactory;
 import engine.core.imp.physics.PhysicsManager;
 import engine.core.imp.physics.Vector2f;
+import engine.core.imp.render.lwjgl.MaterialFactory;
 import engine.core.presets.TexturedSolid;
 import glextra.renderer.LWJGLRenderer2D;
 import gltools.ResourceLocator;
@@ -18,6 +19,7 @@ import gltools.ResourceLocator.ClasspathResourceLocator;
 import gltools.display.LWJGLDisplay;
 import gltools.input.Keyboard;
 import gltools.utils.Timer;
+import gltools.vector.Vector3f;
 
 public class PendulumTest {
 	private World m_world = new World();
@@ -43,8 +45,11 @@ public class PendulumTest {
 		m_world.addEntity(ground);
 
 		// make the pendulum
-		Entity pendulum = new TexturedSolid(m_world, m_physics, renderer, new Vector2f(0.1f, 1f), 0, new Vector2f(0.2f,
-				2f), BodyType.DYNAMIC, "Textures/pendulum.png");
+		// Entity pendulum = new TexturedSolid(m_world, m_physics, renderer, new Vector2f(0.1f, 1f), 0, new
+		// Vector2f(0.2f,
+		// 2f), BodyType.DYNAMIC, "Textures/spaceship.png", "Textures/spaceship_n.png", new Vector3f(2f, 0f, 10f));
+		Entity pendulum = new TexturedSolid(m_world, m_physics, renderer, new Vector2f(0.1f, 1f), 0, new Vector2f(4f,
+				4f), BodyType.DYNAMIC, "Textures/tribase1.png", "Textures/tribase1_n.png", new Vector3f(0f, 2f, 3f));
 		m_world.addEntity(pendulum);
 
 		// create the joint
@@ -62,6 +67,8 @@ public class PendulumTest {
 			balancePendulum(ground, pendulum);
 			movePendulum(pendulum, keyboard);
 			m_world.update(0.0166666666666666f);
+			renderer.setMaterial(MaterialFactory.createBasicMaterial());
+			renderer.fillRect(0f, 2f, 0.1f, 0.1f);
 			renderer.finishGeometry();
 			display.update(60);
 
@@ -72,23 +79,24 @@ public class PendulumTest {
 		}
 	}
 
-	// private float ierror = 0;
-	private float lastperror = 0;
+	private float ierror = 0;
+
+	// private float lastperror = 0;
 
 	private void balancePendulum(Entity ground, Entity pendulum) {
 		Body gBody = m_physics.getBody(ground);
 		Body pBody = m_physics.getBody(pendulum);
 
-		/*float perror = pBody.getAngle();
+		float perror = pBody.getAngle();
 		float derror = pBody.getAngularVelocity();
 		ierror += perror;
-		float correction = -perror * 30f + -ierror * 10f + (-derror * 1f);*/
-		float perror = pBody.getLinearVelocity().x;
+		float correction = -perror * 30f + -ierror * 10f + (-derror * 1f);
+		/*float perror = pBody.getLinearVelocity().x;
 		float ierror = pBody.getPosition().x;
-		float derror = (perror - lastperror) * 60f /*delta time*/;
+		float derror = (perror - lastperror) * 60f; // delta time
 		float correction = perror * 1.0f + ierror * 1.0f + derror * 0.5f;
 
-		lastperror = perror;
+		lastperror = perror;*/
 
 		System.out.println("Proportional: " + perror);
 		System.out.println("Derivative: " + derror);

@@ -9,6 +9,7 @@ import gltools.shader.Program.ProgramLinkException;
 import gltools.shader.Shader.ShaderCompileException;
 import gltools.texture.Color;
 import gltools.texture.TextureFactory;
+import gltools.vector.Vector3f;
 
 import java.io.IOException;
 
@@ -28,7 +29,7 @@ public class MaterialFactory {
 
 		Material mat = null;
 		try {
-			//Hack global params in there for now
+			// Hack global params in there for now
 			mat = MaterialXMLLoader.s_load("Materials/2d.mat", locator, GlobalParams.getInstance()).get(0);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -52,7 +53,7 @@ public class MaterialFactory {
 
 		Material mat = null;
 		try {
-			mat = MaterialXMLLoader.s_load("Materials/2d.mat", locator).get(0);
+			mat = MaterialXMLLoader.s_load("Materials/2d.mat", locator, GlobalParams.getInstance()).get(0);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ShaderCompileException e) {
@@ -75,7 +76,7 @@ public class MaterialFactory {
 
 		Material mat = null;
 		try {
-			mat = MaterialXMLLoader.s_load("Materials/2d.mat", locator).get(0);
+			mat = MaterialXMLLoader.s_load("Materials/2d.mat", locator, GlobalParams.getInstance()).get(0);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ShaderCompileException e) {
@@ -90,6 +91,44 @@ public class MaterialFactory {
 			e.printStackTrace();
 		}
 
+		return mat;
+	}
+
+	/**
+	 * Creates a Material with a bumpMap and a texture.
+	 * 
+	 * @param texture
+	 * @param bumpMap
+	 * @param lightPosition
+	 * @return the created Material.
+	 */
+	public static Material createBasicMaterial(String texture, String bumpMap, Vector3f lightPosition) {
+		if (locator == null)
+			locator = new ClasspathResourceLocator();
+
+		Material mat = null;
+		try {
+			mat = MaterialXMLLoader.s_load("Materials/2d.mat", locator, GlobalParams.getInstance()).get(0);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ShaderCompileException e) {
+			e.printStackTrace();
+		} catch (ProgramLinkException e) {
+			e.printStackTrace();
+		}
+
+		mat.setColor("materialDiffuseColor", new Color(1f, 1f, 1f));
+		try {
+			mat.setTexture2D("materialDiffuseTexture", TextureFactory.s_loadTexture(texture, locator));
+			mat.setTexture2D("materialNormalMap", TextureFactory.s_loadTexture(bumpMap, locator));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		mat.setBoolean("useLighting", true);
+		mat.setVector3f("lightPos", lightPosition);
+		mat.setColor("lightDiffuseColor", new Color(1f, 1f, 1f));
+		mat.setColor("lightAmbientColor", new Color(0f, 0f, 0f));
+		mat.setVector3f("lightAttenuation", new Vector3f(0f, 0f, 0.05f));
 		return mat;
 	}
 }
