@@ -19,7 +19,7 @@ public class TexturedSolid extends Entity {
 	public TexturedSolid(World world, PhysicsManager physics, LWJGLRenderer2D renderer, Vector2f position,
 			float rotation, Vector2f dimensions, BodyType type, String texture) {
 		super(world);
-		// addComponent(new SolidRenderComponent(renderer));
+		addComponent(new SolidRenderComponent(renderer));
 		setData("sys_dimensions", dimensions);
 		setData("sys_material", MaterialFactory.createBasicMaterial(texture));
 
@@ -36,5 +36,9 @@ public class TexturedSolid extends Entity {
 
 		m_body = physics.createBody(this, PhysicsFactory.makeBodyDef(position, type, rotation, 0f));
 		m_body.createFixture(PhysicsFactory.makeRectangularFixtureDef(dimensions, 0, 1.5f, 0.3f, 0.1f));
+	}
+
+	public Body getBody() {
+		return m_body;
 	}
 }

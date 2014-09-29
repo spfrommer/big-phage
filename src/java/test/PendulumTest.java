@@ -19,7 +19,6 @@ import gltools.ResourceLocator.ClasspathResourceLocator;
 import gltools.display.LWJGLDisplay;
 import gltools.input.Keyboard;
 import gltools.utils.Timer;
-import gltools.vector.Vector3f;
 
 public class PendulumTest {
 	private World m_world = new World();
@@ -48,8 +47,8 @@ public class PendulumTest {
 		// Entity pendulum = new TexturedSolid(m_world, m_physics, renderer, new Vector2f(0.1f, 1f), 0, new
 		// Vector2f(0.2f,
 		// 2f), BodyType.DYNAMIC, "Textures/spaceship.png", "Textures/spaceship_n.png", new Vector3f(2f, 0f, 10f));
-		Entity pendulum = new TexturedSolid(m_world, m_physics, renderer, new Vector2f(0.1f, 1f), 0, new Vector2f(4f,
-				4f), BodyType.DYNAMIC, "Textures/tribase1.png", "Textures/tribase1_n.png", new Vector3f(0f, 2f, 3f));
+		TexturedSolid pendulum = new TexturedSolid(m_world, m_physics, renderer, new Vector2f(0.1f, 1f), 0,
+				new Vector2f(0.2f, 2f), BodyType.DYNAMIC, "Textures/pendulum.png");
 		m_world.addEntity(pendulum);
 
 		// create the joint
@@ -79,40 +78,36 @@ public class PendulumTest {
 		}
 	}
 
-	private float ierror = 0;
-
-	// private float lastperror = 0;
-
 	private void balancePendulum(Entity ground, Entity pendulum) {
 		Body gBody = m_physics.getBody(ground);
 		Body pBody = m_physics.getBody(pendulum);
 
-		float perror = pBody.getAngle();
-		float derror = pBody.getAngularVelocity();
-		ierror += perror;
-		float correction = -perror * 30f + -ierror * 10f + (-derror * 1f);
-		/*float perror = pBody.getLinearVelocity().x;
-		float ierror = pBody.getPosition().x;
-		float derror = (perror - lastperror) * 60f; // delta time
-		float correction = perror * 1.0f + ierror * 1.0f + derror * 0.5f;
+		// desired angular acceleration
+		float thetaDotDot = -pBody.getAngle() * 3f - pBody.getAngularVelocity() * 1f + pBody.getLinearVelocity().x
+				* 0.05f;
+		float xDotDot = calcAcceleration(gBody, pBody, 1f, thetaDotDot);
+		System.out.println("Theta - " + pBody.getAngle() + " : Theta dot - " + pBody.getAngularVelocity()
+				+ " : Theta dot dot - " + thetaDotDot + " : X dot dot" + xDotDot + " : x Dot "
+				+ gBody.getLinearVelocity().x);
 
-		lastperror = perror;*/
+		gBody.setLinearVelocity(new Vec2(gBody.getLinearVelocity().x + xDotDot * (1f / 60f), 0));
+	}
 
-		System.out.println("Proportional: " + perror);
-		System.out.println("Derivative: " + derror);
-		System.out.println("Integral: " + ierror);
-
-		gBody.setLinearVelocity(new Vec2(correction, 0));
+	private float calcAcceleration(Body ground, Body pendulum, float pendulumLen, float thetaDotDot) {
+		float g = 10f;
+		float cosTheta = (float) Math.cos(pendulum.getAngle());
+		float sinTheta = (float) Math.sin(pendulum.getAngle());
+		return (thetaDotDot * pendulumLen - g * sinTheta) / cosTheta;
 	}
 
 	private void movePendulum(Entity pendulum, Keyboard keyboard) {
 		Body pBody = m_physics.getBody(pendulum);
 		if (keyboard.isKeyPressed(keyboard.getKey("LEFT"))) {
-			pBody.applyAngularImpulse(0.2f);
+			pBody.applyAngularImpulse(0.01f);
 		}
 
 		if (keyboard.isKeyPressed(keyboard.getKey("RIGHT")))
-			pBody.applyAngularImpulse(-0.2f);
+			pBody.applyAngularImpulse(-0.01f);
 	}
 
 	private static LWJGLDisplay makeDisplay(String title) {
