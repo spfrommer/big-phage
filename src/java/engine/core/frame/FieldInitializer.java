@@ -1,4 +1,4 @@
-package engine.core.framework;
+package engine.core.frame;
 
 import java.util.HashSet;
 import java.util.Set;

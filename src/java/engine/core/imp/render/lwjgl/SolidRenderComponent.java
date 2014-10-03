@@ -4,8 +4,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import engine.core.framework.Component;
-import engine.core.imp.physics.Vector2f;
+import engine.commons.utils.Vector2f;
+import engine.core.frame.Component;
 import glextra.material.Material;
 import glextra.renderer.LWJGLRenderer2D;
 
@@ -23,13 +23,13 @@ public class SolidRenderComponent extends Component {
 	public void update(float time) {
 		Vector2f position = (Vector2f) getData("sys_position");
 		Vector2f dimensions = (Vector2f) getData("sys_dimensions");
-		double rotation = (Double) getData("sys_rotation");
+		float rotation = (Float) getData("sys_rotation");
 		Material mat = (Material) getData("sys_material");
 
 		m_renderer.setMaterial(mat);
 		m_renderer.pushModel();
 		m_renderer.translate(position.x, position.y);
-		m_renderer.rotate((float) (rotation));
+		m_renderer.rotate(rotation);
 		m_renderer.fillRect(-dimensions.x / 2, -dimensions.y / 2, dimensions.x, dimensions.y);
 		m_renderer.popModel();
 	}

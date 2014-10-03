@@ -5,7 +5,7 @@ import java.util.List;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
 
-import engine.core.imp.physics.Vector2f;
+import engine.commons.utils.Vector2f;
 
 public class Grid {
 	private Vector2f m_bleft;

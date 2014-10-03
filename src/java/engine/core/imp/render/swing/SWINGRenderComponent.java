@@ -4,8 +4,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import engine.core.framework.Component;
-import engine.core.imp.physics.Vector2f;
+import engine.commons.utils.Vector2f;
+import engine.core.frame.Component;
 
 public class SWINGRenderComponent extends Component {
 	private static final Set<String> IDENTIFIERS = new HashSet<String>(Arrays.asList("sys_position"));

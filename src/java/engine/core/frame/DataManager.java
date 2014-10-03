@@ -1,4 +1,4 @@
-package engine.core.framework;
+package engine.core.frame;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -33,12 +33,28 @@ public abstract class DataManager {
 	 */
 	public abstract void entityRegistered(Entity entity);
 
+	/**
+	 * @return the data this manager manages.
+	 */
 	public abstract Set<String> getDataIdentifiers();
 
+	/**
+	 * Allows the DataManager to handle requests to set data.
+	 * 
+	 * @param entity
+	 * @param identifier
+	 * @param data
+	 */
 	public abstract void setData(Entity entity, String identifier, Object data);
 
 	protected abstract void update(float time);
 
+	/**
+	 * Called once every update loop by the world.
+	 * 
+	 * @param entity
+	 * @param identifier
+	 */
 	public abstract void updateData(Entity entity, String identifier);
 
 	public static final DataManager NONE = new DataManager() {

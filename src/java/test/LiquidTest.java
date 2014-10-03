@@ -4,15 +4,15 @@ import java.awt.geom.Path2D;
 
 import org.jbox2d.dynamics.BodyType;
 
-import engine.core.framework.Entity;
-import engine.core.framework.World;
+import engine.commons.utils.Vector2f;
+import engine.core.frame.Entity;
+import engine.core.frame.World;
 import engine.core.imp.SystemFieldInitializer;
 import engine.core.imp.physics.PhysicsFactory;
 import engine.core.imp.physics.PhysicsManager;
-import engine.core.imp.physics.Vector2f;
 import engine.core.imp.render.lwjgl.LiquidRenderComponent;
 import engine.core.imp.render.lwjgl.MaterialFactory;
-import engine.core.presets.TexturedSolid;
+import engine.core.presets.PhysicsGameFactory;
 import glextra.renderer.LWJGLRenderer2D;
 import gltools.ResourceLocator;
 import gltools.ResourceLocator.ClasspathResourceLocator;
@@ -26,6 +26,7 @@ import gltools.utils.Timer;
 public class LiquidTest {
 	private World m_world = new World();
 	private PhysicsManager m_physics = new PhysicsManager();
+	private PhysicsGameFactory m_factory;
 
 	public LiquidTest() {
 		startTest();
@@ -37,23 +38,23 @@ public class LiquidTest {
 
 		final LWJGLRenderer2D renderer = LWJGLRenderer2D.getInstance();
 		renderer.init(-5f, 5f, 5f, -5f);
+		m_factory = new PhysicsGameFactory(m_world, m_physics, renderer);
 
 		m_world.addFieldInitializer(new SystemFieldInitializer());
 		m_world.addDataManager(m_physics);
 
 		// make the ground
-		Entity ground = new TexturedSolid(m_world, m_physics, renderer, new Vector2f(0f, 0f), 0f, new Vector2f(3f, 1f),
-				BodyType.KINEMATIC, "Textures/metalplate.jpg");
+		Entity ground = m_factory.createTexturedSolid(new Vector2f(0f, 0f), 0f, new Vector2f(3f, 1f),
+				BodyType.KINEMATIC, MaterialFactory.createBasicMaterial("Textures/metalplate.jpg"));
 		m_world.addEntity(ground);
 
 		// make the walls
-
-		Entity wall1 = new TexturedSolid(m_world, m_physics, renderer, new Vector2f(1.75f, 1.5f), 0f, new Vector2f(
-				0.5f, 4f), BodyType.KINEMATIC, "Textures/metalplate.jpg");
+		Entity wall1 = m_factory.createTexturedSolid(new Vector2f(1.75f, 1.5f), 0f, new Vector2f(0.5f, 4f),
+				BodyType.KINEMATIC, MaterialFactory.createBasicMaterial("Textures/metalplate.jpg"));
 		m_world.addEntity(wall1);
 
-		Entity wall2 = new TexturedSolid(m_world, m_physics, renderer, new Vector2f(-1.75f, 1.5f), 0f, new Vector2f(
-				0.5f, 4f), BodyType.KINEMATIC, "Textures/metalplate.jpg");
+		Entity wall2 = m_factory.createTexturedSolid(new Vector2f(-1.75f, 1.5f), 0f, new Vector2f(0.5f, 4f),
+				BodyType.KINEMATIC, MaterialFactory.createBasicMaterial("Textures/metalplate.jpg"));
 		m_world.addEntity(wall2);
 
 		keyboard.addListener(new KeyListener() {
@@ -64,9 +65,9 @@ public class LiquidTest {
 
 			@Override
 			public void keyPressed(Keyboard k, Key key) {
-				Entity box = new TexturedSolid(m_world, m_physics, renderer, new Vector2f(
-						(float) (Math.random() - 0.5f) * 2f, 5f), 0f, new Vector2f(0.3f, 0.5f), BodyType.DYNAMIC,
-						"Textures/metalplate.jpg");
+				Entity box = m_factory.createTexturedSolid(new Vector2f((float) (Math.random() - 0.5f) * 2f, 5f), 0f,
+						new Vector2f(0.3f, 0.5f), BodyType.DYNAMIC,
+						MaterialFactory.createBasicMaterial("Textures/metalplate.jpg"));
 				m_world.addEntity(box);
 			}
 		});

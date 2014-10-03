@@ -17,26 +17,30 @@ import org.jbox2d.dynamics.World;
 import org.jbox2d.dynamics.joints.Joint;
 import org.jbox2d.dynamics.joints.JointDef;
 
-import engine.core.framework.DataManager;
-import engine.core.framework.Entity;
+import engine.commons.utils.Vector2f;
+import engine.core.frame.DataManager;
+import engine.core.frame.Entity;
 import engine.core.imp.physics.liquid.Liquid;
 import engine.core.imp.physics.liquid.LiquidDef;
 
 public class PhysicsManager extends DataManager {
-	private static final Set<String> IDENTIFIERS = new HashSet<String>(Arrays.asList("sys_type", "sys_position",
-			"sys_rotation", "sys_particles", "sys_particlesize"));
+	private static final Set<String> IDENTIFIERS = new HashSet<String>(Arrays.asList("sys_type", "sys_body",
+			"sys_position", "sys_rotation", "sys_liquid"));
 	private Map<Entity, Body> m_bodies = new HashMap<Entity, Body>();
 	private Map<Entity, Liquid> m_liquids = new HashMap<Entity, Liquid>();
 	private World m_world = new World(new Vec2(0, -10));
 
+	public PhysicsManager() {
+
+	}
+
 	/**
-	 * Creates a Body for the Entity, adds it, and returns it.
+	 * Creates a Body for the Entity and adds it as a data field.
 	 * 
 	 * @param entity
 	 * @param bodyDef
-	 * @return the created Body
 	 */
-	public Body createBody(Entity entity, BodyDef bodyDef) {
+	public void createBody(Entity entity, BodyDef bodyDef) {
 		if (m_bodies.containsKey(entity)) {
 			m_world.destroyBody(m_bodies.get(entity));
 		}
@@ -45,7 +49,7 @@ public class PhysicsManager extends DataManager {
 		m_bodies.put(entity, body);
 
 		entity.directSet("sys_type", State.SOLID);
-		return body;
+		entity.directSet("sys_body", body);
 	}
 
 	/**
@@ -53,9 +57,8 @@ public class PhysicsManager extends DataManager {
 	 * 
 	 * @param entity
 	 * @param liquidDef
-	 * @return the created Liquid
 	 */
-	public Liquid createLiquid(Entity entity, LiquidDef liquidDef) {
+	public void createLiquid(Entity entity, LiquidDef liquidDef) {
 		if (m_liquids.containsKey(entity)) {
 			Liquid liquid = m_liquids.get(entity);
 			for (Body b : liquid.getParticles()) {
@@ -67,7 +70,17 @@ public class PhysicsManager extends DataManager {
 		m_liquids.put(entity, liquid);
 
 		entity.directSet("sys_type", State.LIQUID);
-		return liquid;
+		entity.directSet("sys_liquid", liquid);
+	}
+
+	/**
+	 * Creates a Joint and returns it.
+	 * 
+	 * @param def
+	 * @return the created Joint
+	 */
+	public Joint createJoint(JointDef def) {
+		return m_world.createJoint(def);
 	}
 
 	private Liquid createLiquid(LiquidDef def) {
@@ -84,29 +97,9 @@ public class PhysicsManager extends DataManager {
 		return new Liquid(particles, def.getParticleRadius());
 	}
 
-	/**
-	 * Creates a Joint and returns it.
-	 * 
-	 * @param def
-	 * @return the created Joint
-	 */
-	public Joint createJoint(JointDef def) {
-		return m_world.createJoint(def);
-	}
-
-	/**
-	 * @param entity
-	 * @return the Body associated with the Entity
-	 */
-	public Body getBody(Entity entity) {
-		return m_bodies.get(entity);
-	}
-
 	@Override
 	public void entityRegistered(Entity entity) {
-		if (!m_bodies.containsKey(entity)) {
 
-		}
 	}
 
 	@Override
@@ -120,7 +113,7 @@ public class PhysicsManager extends DataManager {
 			liquid.applyForces(time);
 		}
 
-		m_world.step(1f / 60f, 20, 20);
+		m_world.step(time, 20, 20);
 	}
 
 	@Override
@@ -128,40 +121,17 @@ public class PhysicsManager extends DataManager {
 		State state = (State) entity.getData("sys_type");
 		if (state == State.SOLID) {
 			Body body = m_bodies.get(entity);
+
 			if (identifier.equals("sys_position")) {
 				entity.directSet("sys_position", new Vector2f(body.getPosition().x, body.getPosition().y));
 				return;
 			}
 
 			if (identifier.equals("sys_rotation")) {
-				entity.directSet("sys_rotation", (double) body.getAngle());
+				entity.directSet("sys_rotation", body.getAngle());
 				return;
 			}
 		} else if (state == State.LIQUID) {
-			Liquid liquid = m_liquids.get(entity);
-			if (identifier.equals("sys_particles")) {
-				hasdata: {
-					@SuppressWarnings("unchecked")
-					List<Vector2f> particles = (List<Vector2f>) entity.getData("sys_particles");
-					List<Body> bParticles = liquid.getParticles();
-					if (particles.size() != bParticles.size()) {
-						break hasdata;
-					}
-					for (int i = 0; i < particles.size(); i++) {
-						particles.get(i).set(bParticles.get(i).getPosition());
-					}
-					return;
-				}
-
-				List<Vector2f> particles = new ArrayList<Vector2f>();
-				for (Body p : liquid.getParticles())
-					particles.add(new Vector2f(p.getPosition()));
-				entity.directSet("sys_particles", particles);
-			}
-
-			if (identifier.equals("sys_particlesize")) {
-				entity.directSet("sys_particlesize", liquid.getParticleSize());
-			}
 		}
 	}
 

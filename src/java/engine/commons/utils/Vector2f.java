@@ -1,4 +1,4 @@
-package engine.core.imp.physics;
+package engine.commons.utils;
 
 import org.jbox2d.common.Vec2;
 

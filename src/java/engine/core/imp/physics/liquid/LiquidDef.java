@@ -3,7 +3,7 @@ package engine.core.imp.physics.liquid;
 import java.util.ArrayList;
 import java.util.List;
 
-import engine.core.imp.physics.Vector2f;
+import engine.commons.utils.Vector2f;
 
 public class LiquidDef {
 	private List<Vector2f> m_particlePositions;

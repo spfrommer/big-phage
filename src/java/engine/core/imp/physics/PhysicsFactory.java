@@ -12,6 +12,7 @@ import org.jbox2d.dynamics.BodyType;
 import org.jbox2d.dynamics.FixtureDef;
 import org.jbox2d.dynamics.joints.RevoluteJointDef;
 
+import engine.commons.utils.Vector2f;
 import engine.core.imp.physics.liquid.LiquidDef;
 
 public class PhysicsFactory {
@@ -81,12 +82,8 @@ public class PhysicsFactory {
 		while (y < bounds.getMaxY()) {
 			while (x < bounds.getMaxX()) {
 				x += particleDistance;
-				// System.out.print("Trying " + x + ", " + y);
 				if (poly.contains(x, y)) {
-					// System.out.println("(Added)");
 					liquid.addParticle(new Vector2f(x, y));
-				} else {
-					// System.out.println();
 				}
 			}
 

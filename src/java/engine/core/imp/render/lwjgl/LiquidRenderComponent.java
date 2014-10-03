@@ -2,17 +2,17 @@ package engine.core.imp.render.lwjgl;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
-import engine.core.framework.Component;
-import engine.core.imp.physics.Vector2f;
+import org.jbox2d.dynamics.Body;
+
+import engine.core.frame.Component;
+import engine.core.imp.physics.liquid.Liquid;
 import glextra.material.Material;
 import glextra.renderer.LWJGLRenderer2D;
 
 public class LiquidRenderComponent extends Component {
-	private static final Set<String> IDENTIFIERS = new HashSet<String>(Arrays.asList("sys_particles",
-			"sys_particlesize", "sys_material"));
+	private static final Set<String> IDENTIFIERS = new HashSet<String>(Arrays.asList("sys_liquid", "sys_material"));
 
 	private LWJGLRenderer2D m_renderer;
 
@@ -22,17 +22,16 @@ public class LiquidRenderComponent extends Component {
 
 	@Override
 	public void update(float time) {
-		@SuppressWarnings("unchecked")
-		List<Vector2f> particles = (List<Vector2f>) getData("sys_particles");
-		float psize = (float) getData("sys_particlesize");
+		Liquid liquid = (Liquid) getData("sys_liquid");
 		Material mat = (Material) getData("sys_material");
+
+		float psize = liquid.getParticleSize();
 
 		m_renderer.setMaterial(mat);
 
-		for (Vector2f v : particles) {
-			// System.out.println("Rendering: " + v.x + ", " + v.y);
+		for (Body b : liquid.getParticles()) {
 			m_renderer.pushModel();
-			m_renderer.translate(v.x, v.y);
+			m_renderer.translate(b.getPosition().x, b.getPosition().y);
 			m_renderer.fillRect(-psize + 0.02f, -psize + 0.02f, psize * 2 - 0.04f, psize * 2 - 0.04f);
 			m_renderer.popModel();
 		}
