@@ -5,9 +5,9 @@ import java.util.Set;
 public abstract class Component {
 	private Entity m_entity;
 
-	/*public Entity getEntity() {
+	protected Entity getEntity() {
 		return m_entity;
-	}*/
+	}
 
 	public void setEntity(Entity entity) {
 		m_entity = entity;

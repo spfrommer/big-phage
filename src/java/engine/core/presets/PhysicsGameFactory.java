@@ -30,7 +30,7 @@ public class PhysicsGameFactory {
 		entity.setData("sys_dimensions", dimensions);
 		entity.setData("sys_material", material);
 
-		m_physics.createBody(entity, PhysicsFactory.makeBodyDef(position, type, rotation, 0f));
+		m_physics.createSolid(entity, PhysicsFactory.makeBodyDef(position, type, rotation, 0f));
 		((Body) entity.getData("sys_body")).createFixture(PhysicsFactory.makeRectangularFixtureDef(dimensions, 0, 1.5f,
 				0.3f, 0.1f));
 		return entity;

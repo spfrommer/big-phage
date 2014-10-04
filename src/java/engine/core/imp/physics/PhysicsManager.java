@@ -22,6 +22,7 @@ import engine.core.frame.DataManager;
 import engine.core.frame.Entity;
 import engine.core.imp.physics.liquid.Liquid;
 import engine.core.imp.physics.liquid.LiquidDef;
+import engine.core.imp.physics.liquid.PhysicsConstants;
 
 public class PhysicsManager extends DataManager {
 	private static final Set<String> IDENTIFIERS = new HashSet<String>(Arrays.asList("sys_type", "sys_body",
@@ -40,7 +41,7 @@ public class PhysicsManager extends DataManager {
 	 * @param entity
 	 * @param bodyDef
 	 */
-	public void createBody(Entity entity, BodyDef bodyDef) {
+	public void createSolid(Entity entity, BodyDef bodyDef) {
 		if (m_bodies.containsKey(entity)) {
 			m_world.destroyBody(m_bodies.get(entity));
 		}
@@ -52,8 +53,12 @@ public class PhysicsManager extends DataManager {
 		entity.directSet("sys_body", body);
 	}
 
+	public Body createBody(BodyDef bodyDef) {
+		return m_world.createBody(bodyDef);
+	}
+
 	/**
-	 * Creates a Liquid for the Entity, adds it, and returns it.
+	 * Creates a Liquid for the Entity and adds it as a data field.
 	 * 
 	 * @param entity
 	 * @param liquidDef
@@ -87,14 +92,15 @@ public class PhysicsManager extends DataManager {
 		List<Body> particles = new ArrayList<Body>();
 
 		for (Vector2f p : def.getParticles()) {
-			BodyDef bodyDef = PhysicsFactory.makeBodyDef(p, BodyType.DYNAMIC, 0, 0.9f);
+			BodyDef bodyDef = PhysicsFactory.makeBodyDef(p, BodyType.DYNAMIC, 0f, PhysicsConstants.LIQUID_DAMPENING);
 			Body body = m_world.createBody(bodyDef);
-			FixtureDef fix = PhysicsFactory.makeCircularFixtureDef(def.getParticleRadius(), 0.1f, 0f, 0f);
+			FixtureDef fix = PhysicsFactory.makeCircularFixtureDef(def.getParticleRadius(), def.getDensity(),
+					PhysicsConstants.LIQUID_FRICTION, PhysicsConstants.LIQUID_RESTITUTION);
 			body.createFixture(fix);
 			particles.add(body);
 		}
 
-		return new Liquid(particles, def.getParticleRadius());
+		return new Liquid(particles, def.getParticleRadius(), def.getDensity());
 	}
 
 	@Override

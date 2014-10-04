@@ -97,6 +97,10 @@ public abstract class PhysicsGame {
 		return m_physics;
 	}
 
+	public LWJGLRenderer2D getRenderer() {
+		return m_renderer;
+	}
+
 	private void makeDisplay(String title) {
 		m_display = new LWJGLDisplay(1024, 1024, true);
 		m_display.setTitle(title);

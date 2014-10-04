@@ -70,11 +70,14 @@ public class PhysicsFactory {
 	 * @param poly
 	 * @param particleDistance
 	 * @param particleRadius
+	 * @param particleDensity
 	 * @return the LiquidDef
 	 */
-	public static LiquidDef makeLiquidDef(Path2D poly, float particleDistance, float particleRadius) {
+	public static LiquidDef makeLiquidDef(Path2D poly, float particleDistance, float particleRadius,
+			float particleDensity) {
 		LiquidDef liquid = new LiquidDef();
 		liquid.setParticleRadius(particleRadius);
+		liquid.setDensity(particleDensity);
 		Rectangle2D bounds = poly.getBounds2D();
 		float x = (float) bounds.getMinX();
 		float y = (float) bounds.getMinY();

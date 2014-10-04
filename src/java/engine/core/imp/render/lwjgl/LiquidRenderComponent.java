@@ -25,7 +25,7 @@ public class LiquidRenderComponent extends Component {
 		Liquid liquid = (Liquid) getData("sys_liquid");
 		Material mat = (Material) getData("sys_material");
 
-		float psize = liquid.getParticleSize();
+		float psize = liquid.getParticleRadius();
 
 		m_renderer.setMaterial(mat);
 

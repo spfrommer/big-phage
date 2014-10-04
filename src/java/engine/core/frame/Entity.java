@@ -17,6 +17,10 @@ public class Entity {
 		m_world = world;
 	}
 
+	public World getWorld() {
+		return m_world;
+	}
+
 	public void setWorld(World world) {
 		m_world = world;
 
