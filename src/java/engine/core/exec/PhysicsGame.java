@@ -40,7 +40,7 @@ public abstract class PhysicsGame {
 		readDevices(m_display);
 
 		m_renderer = LWJGLRenderer2D.getInstance();
-		m_renderer.init(-5f, 5f, 5f, -5f);
+		m_renderer.init(m_display.getWidth(), m_display.getHeight(), -5f, 5f, 5f, -5f);
 
 		m_factory = new PhysicsGameFactory(m_world, m_physics, m_renderer);
 

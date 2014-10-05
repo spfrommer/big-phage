@@ -37,7 +37,7 @@ public class LiquidTest {
 		Keyboard keyboard = getKeyboard(display);
 
 		final LWJGLRenderer2D renderer = LWJGLRenderer2D.getInstance();
-		renderer.init(-5f, 5f, 5f, -5f);
+		renderer.init(display.getWidth(), display.getHeight(), -5f, 5f, 5f, -5f);
 		m_factory = new PhysicsGameFactory(m_world, m_physics, renderer);
 
 		m_world.addFieldInitializer(new SystemFieldInitializer());
