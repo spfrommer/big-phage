@@ -48,12 +48,7 @@ public class Entity {
 		m_world = world;
 	}
 
-	/**
-	 * Will reset all the DataManagers to those of the new World.
-	 * 
-	 * @param world
-	 */
-	public void resetWorld(World world) {
+	/*public void resetWorld(World world) {
 		m_world = world;
 
 		for (Component c : m_components) {
@@ -64,42 +59,28 @@ public class Entity {
 				registered.checkRegister(this);
 			}
 		}
-	}
+	}*/
 
-	public void addComponent(Component c) {
-		Set<String> identifiers = c.getDataIdentifiers();
+	public void addComponent(Component comp) {
+		Set<String> identifiers = comp.getDataIdentifiers();
 		for (String initializer : identifiers) {
 			if (!hasDataFor(initializer)) {
 				DataManager registered = m_world.getRegisteredManager(initializer);
 
 				m_data.put(initializer, new ManagedData(new Data(m_world.getRegisteredInitializer(initializer)
-						.createObjectFor(initializer), 1), registered));
+						.createObjectFor(initializer)), registered));
 				registered.checkRegister(this);
-			} else {
-				m_data.get(initializer).data.componentsUsing++;
 			}
 		}
 
-		c.setEntity(this);
-		m_components.add(c);
+		comp.setEntity(this);
+		m_components.add(comp);
 	}
 
-	public void removeComponent(Component c) {
-		Set<String> identifiers = c.getDataIdentifiers();
-		for (String s : identifiers) {
-			m_data.get(s).data.componentsUsing--;
-			if (m_data.get(s).data.componentsUsing == 0) {
-				m_data.remove(s);
-			}
-		}
-
-		c.setEntity(null);
-		m_components.remove(c);
+	public void removeComponent(Component comp) {
+		comp.setEntity(null);
+		m_components.remove(comp);
 	}
-
-	/*public List<Component> getComponents() {
-		return m_components;
-	}*/
 
 	public void updateData(float time) {
 		for (String identifier : m_data.keySet()) {
@@ -132,7 +113,7 @@ public class Entity {
 
 	public void setData(String identifier, Object data) {
 		if (!hasDataFor(identifier)) {
-			m_data.put(identifier, new ManagedData(new Data(null, 0), m_world.getRegisteredManager(identifier)));
+			m_data.put(identifier, new ManagedData(new Data(null), m_world.getRegisteredManager(identifier)));
 		}
 
 		m_data.get(identifier).manager.setData(this, identifier, data);
@@ -150,7 +131,7 @@ public class Entity {
 	 */
 	public void directSetData(String identifier, Object data) {
 		if (!hasDataFor(identifier)) {
-			m_data.put(identifier, new ManagedData(new Data(data, 0), m_world.getRegisteredManager(identifier)));
+			m_data.put(identifier, new ManagedData(new Data(data), m_world.getRegisteredManager(identifier)));
 		} else {
 			m_data.get(identifier).data.data = data;
 		}

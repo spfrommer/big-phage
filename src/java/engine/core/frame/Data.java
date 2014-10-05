@@ -2,10 +2,8 @@ package engine.core.frame;
 
 public class Data {
 	public Object data;
-	public int componentsUsing;
 
-	public Data(Object data, int componentsUsing) {
+	public Data(Object data) {
 		this.data = data;
-		this.componentsUsing = componentsUsing;
 	}
 }

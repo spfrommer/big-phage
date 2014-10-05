@@ -83,7 +83,6 @@ public class LiquidTest extends PhysicsGame {
 
 	@Override
 	public void postUpdate() {
-		// TODO Auto-generated method stub
 
 	}
 

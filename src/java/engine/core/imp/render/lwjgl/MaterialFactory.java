@@ -30,7 +30,7 @@ public class MaterialFactory {
 		Material mat = null;
 		try {
 			// Hack global params in there for now
-			mat = MaterialXMLLoader.s_load("Materials/2d.mat", locator, GlobalParams.getInstance()).get(0);
+			mat = MaterialXMLLoader.s_load("Materials/2d_forward.mat", locator, GlobalParams.getInstance()).get(0);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ShaderCompileException e) {
@@ -53,7 +53,7 @@ public class MaterialFactory {
 
 		Material mat = null;
 		try {
-			mat = MaterialXMLLoader.s_load("Materials/2d.mat", locator, GlobalParams.getInstance()).get(0);
+			mat = MaterialXMLLoader.s_load("Materials/2d_forward.mat", locator, GlobalParams.getInstance()).get(0);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ShaderCompileException e) {
@@ -76,7 +76,7 @@ public class MaterialFactory {
 
 		Material mat = null;
 		try {
-			mat = MaterialXMLLoader.s_load("Materials/2d.mat", locator, GlobalParams.getInstance()).get(0);
+			mat = MaterialXMLLoader.s_load("Materials/2d_forward.mat", locator, GlobalParams.getInstance()).get(0);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ShaderCompileException e) {
