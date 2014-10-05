@@ -19,7 +19,7 @@ import engine.core.imp.physics.PhysicsManager;
  * A component that adds particles to a Liquid.
  */
 public class FountainComponent extends Component {
-	private static final Set<String> IDENTIFIERS = new HashSet<String>(Arrays.asList("sys_fountainPosition"));
+	private static final Set<String> IDENTIFIERS = new HashSet<String>(Arrays.asList("sys_position"));
 	private Liquid m_liquid;
 	private PhysicsManager m_physics;
 
@@ -30,7 +30,7 @@ public class FountainComponent extends Component {
 
 	@Override
 	public void update(float time) {
-		Vector2f position = (Vector2f) getData("sys_fountainPosition");
+		Vector2f position = (Vector2f) getData("sys_position");
 
 		BodyDef bodyDef = PhysicsFactory.makeBodyDef(position, BodyType.DYNAMIC, 0f, PhysicsConstants.LIQUID_DAMPENING);
 		Body body = m_physics.createBody(bodyDef);

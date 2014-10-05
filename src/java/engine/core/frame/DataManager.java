@@ -79,7 +79,7 @@ public abstract class DataManager {
 
 		@Override
 		public void setData(Entity entity, String identifier, Object data) {
-			entity.directSet(identifier, data);
+			entity.directSetData(identifier, data);
 		}
 	};
 }

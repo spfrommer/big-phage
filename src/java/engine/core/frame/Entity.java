@@ -6,6 +6,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * An entity in the world. Data will automatically be assigned the default world manager, unless otherwise specified
+ * with setDataManager(identifer, manager).
+ */
 public class Entity {
 	private World m_world;
 
@@ -13,15 +17,43 @@ public class Entity {
 	private List<Component> m_components = new ArrayList<Component>();
 	private List<EntityListener> m_listeners = new ArrayList<EntityListener>();
 
+	private int m_updateOrder = 0;
+
 	public Entity(World world) {
 		m_world = world;
 	}
 
-	public World getWorld() {
-		return m_world;
+	public void setUpdateOrder(UpdateOrder order) {
+		m_world.setUpdateOrder(this, order);
+	}
+
+	public void setUpdateOrder(int order) {
+		m_world.setUpdateOrder(this, order);
+	}
+
+	/**
+	 * Do not call this method. Call setOrder(order) instead.
+	 * 
+	 * @param order
+	 */
+	protected void directSetOrder(int order) {
+		m_updateOrder = order;
+	}
+
+	public int getUpdateOrder() {
+		return m_updateOrder;
 	}
 
 	public void setWorld(World world) {
+		m_world = world;
+	}
+
+	/**
+	 * Will reset all the DataManagers to those of the new World.
+	 * 
+	 * @param world
+	 */
+	public void resetWorld(World world) {
 		m_world = world;
 
 		for (Component c : m_components) {
@@ -36,14 +68,15 @@ public class Entity {
 
 	public void addComponent(Component c) {
 		Set<String> identifiers = c.getDataIdentifiers();
-		for (String s : identifiers) {
-			if (!hasDataFor(s)) {
-				DataManager registered = m_world.getRegisteredManager(s);
-				m_data.put(s, new ManagedData(new Data(m_world.getRegisteredInitializer(s).createObjectFor(s), 1),
-						registered));
+		for (String initializer : identifiers) {
+			if (!hasDataFor(initializer)) {
+				DataManager registered = m_world.getRegisteredManager(initializer);
+
+				m_data.put(initializer, new ManagedData(new Data(m_world.getRegisteredInitializer(initializer)
+						.createObjectFor(initializer), 1), registered));
 				registered.checkRegister(this);
 			} else {
-				m_data.get(s).data.componentsUsing++;
+				m_data.get(initializer).data.componentsUsing++;
 			}
 		}
 
@@ -67,6 +100,12 @@ public class Entity {
 	/*public List<Component> getComponents() {
 		return m_components;
 	}*/
+
+	public void updateData(float time) {
+		for (String identifier : m_data.keySet()) {
+			m_data.get(identifier).manager.updateData(this, identifier);
+		}
+	}
 
 	public void updateComponents(float time) {
 		for (Component c : m_components) {
@@ -99,7 +138,17 @@ public class Entity {
 		m_data.get(identifier).manager.setData(this, identifier, data);
 	}
 
-	public void directSet(String identifier, Object data) {
+	public void setManager(String identifier, DataManager manager) {
+		m_data.get(identifier).manager = manager;
+	}
+
+	/**
+	 * Do not call this method. Call setData(identifier, data) instead.
+	 * 
+	 * @param identifier
+	 * @param data
+	 */
+	public void directSetData(String identifier, Object data) {
 		if (!hasDataFor(identifier)) {
 			m_data.put(identifier, new ManagedData(new Data(data, 0), m_world.getRegisteredManager(identifier)));
 		} else {

@@ -14,7 +14,7 @@ import engine.core.imp.render.lwjgl.MaterialFactory;
 
 public class SystemFieldInitializer implements FieldInitializer {
 	private static final Set<String> IDENTIFIERS = new HashSet<String>(Arrays.asList("sys_position", "sys_rotation",
-			"sys_material", "sys_dimensions", "sys_body", "sys_liquid", "sys_fountainPosition"));
+			"sys_material", "sys_dimensions", "sys_body", "sys_liquid"));
 
 	@Override
 	public Set<String> getDataIdentifiers() {
@@ -35,8 +35,6 @@ public class SystemFieldInitializer implements FieldInitializer {
 			return null;
 		if (identifier.equals("sys_liquid"))
 			return new Liquid(new ArrayList<Body>(), 0.1f, 0.03f);
-		if (identifier.equals("sys_fountainPosition"))
-			return new Vector2f(0f, 0f);
 
 		return null;
 	}

@@ -6,6 +6,7 @@ import org.jbox2d.dynamics.BodyType;
 
 import engine.commons.utils.Vector2f;
 import engine.core.exec.PhysicsGame;
+import engine.core.frame.DataManager;
 import engine.core.frame.Entity;
 import engine.core.imp.physics.PhysicsFactory;
 import engine.core.imp.physics.liquid.FountainComponent;
@@ -50,13 +51,14 @@ public class LiquidTest extends PhysicsGame {
 		path.lineTo(1.5f + x, 4f + y);
 		path.lineTo(1.5f + x, 0f + y);
 		path.lineTo(-0.3f + x, 0.5f + y);
-		getPhysicsManager().createLiquid(liquid, PhysicsFactory.makeLiquidDef(path, 0.11f, 0.03f, 0.02f));
+		getPhysicsManager().createLiquid(liquid, PhysicsFactory.makeLiquidDef(path, 0.4f, 0.1f, 0.02f));
 		liquid.setData("sys_material", MaterialFactory.createBasicMaterial(new Color(0f, 0f, 1f)));
 		getWorld().addEntity(liquid);
 
 		Entity liquidFountain = new Entity(getWorld());
 		liquidFountain.addComponent(new FountainComponent((Liquid) liquid.getData("sys_liquid"), getPhysicsManager()));
-		liquidFountain.setData("sys_fountainPosition", new Vector2f(0f, 3f));
+		liquidFountain.setManager("sys_position", DataManager.NONE);
+		liquidFountain.setData("sys_position", new Vector2f(0f, 7f));
 		getWorld().addEntity(liquidFountain);
 
 		getKeyboard().addListener(new KeyListener() {
@@ -77,8 +79,6 @@ public class LiquidTest extends PhysicsGame {
 
 	@Override
 	public void preUpdate() {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override

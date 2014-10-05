@@ -49,8 +49,8 @@ public class PhysicsManager extends DataManager {
 		Body body = m_world.createBody(bodyDef);
 		m_bodies.put(entity, body);
 
-		entity.directSet("sys_type", State.SOLID);
-		entity.directSet("sys_body", body);
+		entity.directSetData("sys_type", State.SOLID);
+		entity.directSetData("sys_body", body);
 	}
 
 	public Body createBody(BodyDef bodyDef) {
@@ -74,8 +74,8 @@ public class PhysicsManager extends DataManager {
 		Liquid liquid = createLiquid(liquidDef);
 		m_liquids.put(entity, liquid);
 
-		entity.directSet("sys_type", State.LIQUID);
-		entity.directSet("sys_liquid", liquid);
+		entity.directSetData("sys_type", State.LIQUID);
+		entity.directSetData("sys_liquid", liquid);
 	}
 
 	/**
@@ -129,12 +129,12 @@ public class PhysicsManager extends DataManager {
 			Body body = m_bodies.get(entity);
 
 			if (identifier.equals("sys_position")) {
-				entity.directSet("sys_position", new Vector2f(body.getPosition().x, body.getPosition().y));
+				entity.directSetData("sys_position", new Vector2f(body.getPosition().x, body.getPosition().y));
 				return;
 			}
 
 			if (identifier.equals("sys_rotation")) {
-				entity.directSet("sys_rotation", body.getAngle());
+				entity.directSetData("sys_rotation", body.getAngle());
 				return;
 			}
 		} else if (state == State.LIQUID) {
