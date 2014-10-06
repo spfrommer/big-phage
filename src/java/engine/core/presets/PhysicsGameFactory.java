@@ -8,25 +8,22 @@ import engine.core.frame.Entity;
 import engine.core.frame.World;
 import engine.core.imp.physics.PhysicsFactory;
 import engine.core.imp.physics.PhysicsManager;
-import engine.core.imp.render.lwjgl.SolidRenderComponent;
+import engine.core.imp.render.SolidRenderComponent;
 import glextra.material.Material;
-import glextra.renderer.LWJGLRenderer2D;
 
 public class PhysicsGameFactory {
 	private World m_world;
 	private PhysicsManager m_physics;
-	private LWJGLRenderer2D m_renderer;
 
-	public PhysicsGameFactory(World world, PhysicsManager physics, LWJGLRenderer2D renderer) {
+	public PhysicsGameFactory(World world, PhysicsManager physics) {
 		m_world = world;
 		m_physics = physics;
-		m_renderer = renderer;
 	}
 
 	public Entity createTexturedSolid(Vector2f position, float rotation, Vector2f dimensions, BodyType type,
 			Material material) {
 		Entity entity = new Entity(m_world);
-		entity.addComponent(new SolidRenderComponent(m_renderer));
+		entity.addComponent(new SolidRenderComponent());
 		entity.setData("sys_dimensions", dimensions);
 		entity.setData("sys_material", material);
 

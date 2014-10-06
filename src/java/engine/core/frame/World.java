@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import engine.core.exec.GameState;
+
 public class World {
 	private List<DataManager> m_managers = new ArrayList<DataManager>();
 	private Map<String, DataManager> m_managerRegister = new HashMap<String, DataManager>();
@@ -68,11 +70,13 @@ public class World {
 	public void addEntity(Entity e) {
 		e.setWorld(this);
 		m_entities.add(e);
+		Collections.sort(m_entities, s_updateComparator);
 	}
 
 	public void removeEntity(Entity e) {
 		e.setWorld(null);
 		m_entities.remove(e);
+		Collections.sort(m_entities, s_updateComparator);
 	}
 
 	public void setUpdateOrder(Entity e, UpdateOrder order) {
@@ -89,34 +93,17 @@ public class World {
 		Collections.sort(m_entities, s_updateComparator);
 	}
 
-	public void update(float time) {
-		// updateData(time);
+	public void update(float time, GameState state) {
 		for (DataManager dm : m_managers)
 			dm.update(time);
-		updateEntities(time);
+
+		updateEntities(time, state);
 	}
 
-	/*private void updateData(float time) {
-		for (DataManager dm : m_managers) {
-			dm.update(time);
-
-			Set<String> identifiers = dm.getDataIdentifiers();
-
-			for (Entity e : m_entities) {
-				for (String identifier : identifiers) {
-					if (e.hasDataFor(identifier)) {
-						dm.updateData(e, identifier);
-					}
-				}
-			}
-		}
-	}*/
-
-	private void updateEntities(float time) {
+	private void updateEntities(float time, GameState state) {
 		for (Entity e : m_entities) {
-
 			e.updateData(time);
-			e.updateComponents(time);
+			e.updateComponents(time, state);
 		}
 	}
 

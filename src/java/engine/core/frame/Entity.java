@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import engine.core.exec.GameState;
+
 /**
  * An entity in the world. Data will automatically be assigned the default world manager, unless otherwise specified
  * with setDataManager(identifer, manager).
@@ -88,9 +90,9 @@ public class Entity {
 		}
 	}
 
-	public void updateComponents(float time) {
+	public void updateComponents(float time, GameState state) {
 		for (Component c : m_components) {
-			c.update(time);
+			c.update(time, state);
 		}
 	}
 

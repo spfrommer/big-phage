@@ -1,37 +1,36 @@
-package engine.core.imp.render.lwjgl;
+package engine.core.imp.render;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 import engine.commons.utils.Vector2f;
+import engine.core.exec.GameState;
 import engine.core.frame.Component;
 import glextra.material.Material;
-import glextra.renderer.LWJGLRenderer2D;
+import glextra.renderer.Renderer2D;
 
 public class SolidRenderComponent extends Component {
 	private static final Set<String> IDENTIFIERS = new HashSet<String>(Arrays.asList("sys_position", "sys_rotation",
 			"sys_material"));
 
-	private LWJGLRenderer2D m_renderer;
-
-	public SolidRenderComponent(LWJGLRenderer2D renderer) {
-		m_renderer = renderer;
+	public SolidRenderComponent() {
 	}
 
 	@Override
-	public void update(float time) {
+	public void update(float time, GameState state) {
 		Vector2f position = (Vector2f) getData("sys_position");
 		Vector2f dimensions = (Vector2f) getData("sys_dimensions");
 		float rotation = (Float) getData("sys_rotation");
 		Material mat = (Material) getData("sys_material");
+		Renderer2D renderer = state.renderer;
 
-		m_renderer.setMaterial(mat);
-		m_renderer.pushModel();
-		m_renderer.translate(position.x, position.y);
-		m_renderer.rotate(rotation);
-		m_renderer.fillRect(-dimensions.x / 2, -dimensions.y / 2, dimensions.x, dimensions.y);
-		m_renderer.popModel();
+		renderer.setMaterial(mat);
+		renderer.pushModel();
+		renderer.translate(position.x, position.y);
+		renderer.rotate(rotation);
+		renderer.fillRect(-dimensions.x / 2, -dimensions.y / 2, dimensions.x, dimensions.y);
+		renderer.popModel();
 	}
 
 	@Override

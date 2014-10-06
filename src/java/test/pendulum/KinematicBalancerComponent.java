@@ -7,6 +7,7 @@ import java.util.Set;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
 
+import engine.core.exec.GameState;
 import engine.core.frame.Component;
 import engine.core.frame.Entity;
 
@@ -17,7 +18,7 @@ public class KinematicBalancerComponent extends Component {
 	private static final Set<String> IDENTIFIERS = new HashSet<String>(Arrays.asList("sys_body", "pen_pendulum"));
 
 	@Override
-	public void update(float time) {
+	public void update(float time, GameState state) {
 		Body body = (Body) getData("sys_body");
 
 		Entity pendulum = (Entity) getData("pen_pendulum");

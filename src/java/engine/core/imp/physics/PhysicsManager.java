@@ -53,8 +53,21 @@ public class PhysicsManager extends DataManager {
 		entity.directSetData("sys_body", body);
 	}
 
+	/**
+	 * @param bodyDef
+	 * @return a standalone Body not attached to any Entity
+	 */
 	public Body createBody(BodyDef bodyDef) {
 		return m_world.createBody(bodyDef);
+	}
+
+	/**
+	 * Destroys a Body.
+	 * 
+	 * @param body
+	 */
+	public void destroyBody(Body body) {
+		m_world.destroyBody(body);
 	}
 
 	/**
@@ -88,6 +101,19 @@ public class PhysicsManager extends DataManager {
 		return m_world.createJoint(def);
 	}
 
+	/**
+	 * Destroys a Joint.
+	 * 
+	 * @param joint
+	 */
+	public void destroyJoint(Joint joint) {
+		m_world.destroyJoint(joint);
+	}
+
+	/**
+	 * @param def
+	 * @return the created Liquid
+	 */
 	private Liquid createLiquid(LiquidDef def) {
 		List<Body> particles = new ArrayList<Body>();
 
@@ -100,7 +126,7 @@ public class PhysicsManager extends DataManager {
 			particles.add(body);
 		}
 
-		return new Liquid(particles, def.getParticleRadius(), def.getDensity());
+		return new Liquid(particles, def.getParticleRadius(), def.getDensity(), def.getOrigin(), def.getMaxDist());
 	}
 
 	@Override
@@ -116,7 +142,7 @@ public class PhysicsManager extends DataManager {
 	@Override
 	public void update(float time) {
 		for (Liquid liquid : m_liquids.values()) {
-			liquid.applyForces(time);
+			liquid.applyForces(time, this);
 		}
 
 		m_world.step(time, 20, 20);

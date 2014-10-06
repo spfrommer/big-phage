@@ -71,10 +71,12 @@ public class PhysicsFactory {
 	 * @param particleDistance
 	 * @param particleRadius
 	 * @param particleDensity
+	 * @param origin
+	 * @param maxDist
 	 * @return the LiquidDef
 	 */
 	public static LiquidDef makeLiquidDef(Path2D poly, float particleDistance, float particleRadius,
-			float particleDensity) {
+			float particleDensity, Vector2f origin, float maxDist) {
 		LiquidDef liquid = new LiquidDef();
 		liquid.setParticleRadius(particleRadius);
 		liquid.setDensity(particleDensity);
@@ -93,7 +95,8 @@ public class PhysicsFactory {
 			y += particleDistance;
 			x = (float) bounds.getMinX();
 		}
-
+		liquid.setOrigin(origin);
+		liquid.setMaxDist(maxDist);
 		return liquid;
 	}
 }

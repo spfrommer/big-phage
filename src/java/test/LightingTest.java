@@ -12,31 +12,23 @@ import glextra.renderer.Light.PointLight;
 import gltools.texture.Color;
 import gltools.vector.Vector3f;
 
-public class LayerTest extends PhysicsGame {
-	public LayerTest() {
-		super("Layer Test");
+public class LightingTest extends PhysicsGame {
+
+	public LightingTest() {
+		super("Lighting Test");
 	}
 
 	@Override
 	public void onStart() {
 		PhysicsGameFactory factory = this.getGameFactory();
 
-		// make the background
-		Entity background = factory.createTexturedSolid(new Vector2f(0f, 0f), 0f, new Vector2f(10f, 10f),
-				BodyType.STATIC, MaterialFactory.createBasicMaterial("Textures/grassbackground.png"));
-		background.setUpdateOrder(0);
-		getWorld().addEntity(background);
-
-		// make the wall
-		Entity wall = factory.createTexturedSolid(new Vector2f(1.75f, 1.5f), 0f, new Vector2f(0.5f, 4f),
+		Entity wall = factory.createTexturedSolid(new Vector2f(3.75f, 1.5f), 0f, new Vector2f(0.5f, 4f),
 				BodyType.KINEMATIC, MaterialFactory.createBasicMaterial("Textures/metalplate.jpg"));
-		wall.setUpdateOrder(1);
 		getWorld().addEntity(wall);
 
-		// add the light
 		Entity light = new Entity(getWorld());
 		light.addComponent(new LightComponent());
-		light.setData("sys_light", new PointLight(new Vector3f(5f, 5f, 5f), new Vector3f(0f, 0f, 0.05f), new Color(1f,
+		light.setData("sys_light", new PointLight(new Vector3f(0f, 0f, 3f), new Vector3f(0f, 0f, 0.05f), new Color(0f,
 				1f, 1f), new Color(0.1f, 0.1f, 0.1f, 0.1f)));
 		getWorld().addEntity(light);
 	}
@@ -52,7 +44,7 @@ public class LayerTest extends PhysicsGame {
 	}
 
 	public static void main(String[] args) {
-		LayerTest test = new LayerTest();
+		LightingTest test = new LightingTest();
 		test.start();
 	}
 }

@@ -2,6 +2,8 @@ package engine.core.frame;
 
 import java.util.Set;
 
+import engine.core.exec.GameState;
+
 public abstract class Component {
 	private Entity m_entity;
 
@@ -17,7 +19,7 @@ public abstract class Component {
 		return m_entity.getData(identifier);
 	}
 
-	public abstract void update(float time);
+	public abstract void update(float time, GameState state);
 
 	public abstract Set<String> getDataIdentifiers();
 

@@ -6,27 +6,26 @@ import java.util.Set;
 
 import org.jbox2d.dynamics.Body;
 
+import engine.core.exec.GameState;
 import engine.core.frame.Component;
 import gltools.input.Keyboard;
 
 public class KeyboardRotateComponent extends Component {
 	private static final Set<String> IDENTIFIERS = new HashSet<String>(Arrays.asList("sys_body"));
 
-	private Keyboard m_keyboard;
-
-	public KeyboardRotateComponent(Keyboard keyboard) {
-		m_keyboard = keyboard;
+	public KeyboardRotateComponent() {
 	}
 
 	@Override
-	public void update(float time) {
+	public void update(float time, GameState state) {
 		Body body = (Body) getData("sys_body");
+		Keyboard keyboard = state.keyboard;
 
-		if (m_keyboard.isKeyPressed(m_keyboard.getKey("LEFT"))) {
+		if (keyboard.isKeyPressed(keyboard.getKey("LEFT"))) {
 			body.applyAngularImpulse(0.01f);
 		}
 
-		if (m_keyboard.isKeyPressed(m_keyboard.getKey("RIGHT"))) {
+		if (keyboard.isKeyPressed(keyboard.getKey("RIGHT"))) {
 			body.applyAngularImpulse(-0.01f);
 		}
 	}
