@@ -5,7 +5,8 @@ import java.util.Arrays;
 import org.jbox2d.dynamics.BodyType;
 
 import engine.commons.utils.Vector2f;
-import engine.core.exec.PhysicsGame;
+import engine.core.exec.MaterialPool;
+import engine.core.exec.SimplePhysicsGame;
 import engine.core.frame.Entity;
 import engine.core.imp.render.LightComponent;
 import engine.core.imp.render.MaterialFactory;
@@ -14,10 +15,15 @@ import glextra.renderer.Light.PointLight;
 import gltools.texture.Color;
 import gltools.vector.Vector3f;
 
-public class LightingTest extends PhysicsGame {
+public class LightingTest extends SimplePhysicsGame {
 
 	public LightingTest() {
 		super("Lighting Test");
+	}
+
+	@Override
+	public void createMaterials() {
+		MaterialPool.materials.put("metalplate", MaterialFactory.createBasicMaterial("Textures/metalplate.jpg"));
 	}
 
 	@Override
@@ -25,7 +31,7 @@ public class LightingTest extends PhysicsGame {
 		PhysicsGameFactory factory = this.getGameFactory();
 
 		Entity wall = factory.createTexturedSolid(new Vector2f(0f, 1.5f), 0f, new Vector2f(0.5f, 4f),
-				BodyType.KINEMATIC, MaterialFactory.createBasicMaterial("Textures/metalplate.jpg"));
+				BodyType.KINEMATIC, MaterialPool.materials.get("metalplate"));
 		getWorld().addEntity(wall);
 
 		Entity light = new Entity(getWorld());

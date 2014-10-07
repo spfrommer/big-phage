@@ -37,7 +37,6 @@ public class FountainComponent extends Component {
 
 		m_curTime += time;
 
-		System.out.println("checking time");
 		while (m_curTime >= m_spawnTime) {
 			BodyDef bodyDef = PhysicsFactory.makeBodyDef(position, BodyType.DYNAMIC, 0f,
 					PhysicsConstants.LIQUID_DAMPENING);
@@ -53,7 +52,6 @@ public class FountainComponent extends Component {
 
 			m_curTime -= m_spawnTime;
 		}
-		System.out.println("Done checking");
 	}
 
 	@Override

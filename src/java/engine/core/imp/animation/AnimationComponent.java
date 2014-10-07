@@ -43,7 +43,6 @@ public class AnimationComponent extends Component {
 					return;
 				}
 			}
-
 			setData("sys_material", frames.get(m_currentFrame));
 			m_currentFrame++;
 			m_timeElapsed -= timePerFrame;

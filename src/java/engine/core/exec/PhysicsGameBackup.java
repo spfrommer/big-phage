@@ -11,12 +11,11 @@ import gltools.ResourceLocator.ClasspathResourceLocator;
 import gltools.display.LWJGLDisplay;
 import gltools.input.Keyboard;
 import gltools.input.Mouse;
-import gltools.util.Timer;
 
 /**
  * A basic game with physics and rendering.
  */
-public abstract class PhysicsGame {
+public abstract class PhysicsGameBackup {
 	private World m_world;
 	private PhysicsManager m_physics;
 	private PhysicsGameFactory m_factory;
@@ -31,7 +30,7 @@ public abstract class PhysicsGame {
 
 	private GameState m_state = new GameState();
 
-	public PhysicsGame(String title) {
+	public PhysicsGameBackup(String title) {
 		m_world = new World();
 		m_physics = new PhysicsManager();
 		m_title = title;
@@ -56,9 +55,7 @@ public abstract class PhysicsGame {
 		m_state.mouse = m_mouse;
 		onStart();
 
-		Timer timer = new Timer();
 		while (!m_keyboard.isKeyPressed(m_keyboard.getKey("ESCAPE")) && !m_display.closeRequested()) {
-			timer.mark();
 
 			m_keyboard.poll();
 			m_mouse.poll();
@@ -91,14 +88,6 @@ public abstract class PhysicsGame {
 		return m_world;
 	}
 
-	public Keyboard getKeyboard() {
-		return m_keyboard;
-	}
-
-	public Mouse getMouse() {
-		return m_mouse;
-	}
-
 	public PhysicsGameFactory getGameFactory() {
 		return m_factory;
 	}
@@ -129,5 +118,4 @@ public abstract class PhysicsGame {
 		m_keyboard = keyboard;
 		m_mouse = mouse;
 	}
-
 }

@@ -7,7 +7,8 @@ import org.jbox2d.dynamics.BodyType;
 import org.jbox2d.dynamics.joints.RevoluteJointDef;
 
 import engine.commons.utils.Vector2f;
-import engine.core.exec.PhysicsGame;
+import engine.core.exec.MaterialPool;
+import engine.core.exec.SimplePhysicsGame;
 import engine.core.frame.Entity;
 import engine.core.imp.physics.PhysicsFactory;
 import engine.core.imp.render.LightComponent;
@@ -17,10 +18,16 @@ import glextra.renderer.Light.PointLight;
 import gltools.texture.Color;
 import gltools.vector.Vector3f;
 
-public class PendulumTest extends PhysicsGame {
+public class PendulumTest extends SimplePhysicsGame {
 
 	public PendulumTest() {
 		super("Pendulum Test");
+	}
+
+	@Override
+	public void createMaterials() {
+		MaterialPool.materials.put("metalplate", MaterialFactory.createBasicMaterial("Textures/metalplate.jpg"));
+		MaterialPool.materials.put("pendulum", MaterialFactory.createBasicMaterial("Textures/pendulum.png"));
 	}
 
 	@Override
@@ -29,14 +36,14 @@ public class PendulumTest extends PhysicsGame {
 
 		// make the pendulum
 		Entity pendulum = factory.createTexturedSolid(new Vector2f(-0.1f, 1f), 0, new Vector2f(0.2f, 2f),
-				BodyType.DYNAMIC, MaterialFactory.createBasicMaterial("Textures/pendulum.png"));
+				BodyType.DYNAMIC, MaterialPool.materials.get("pendulum"));
 		pendulum.setData("pen_penlength", 1f); // sets the length of the pendulum to be right in the middle
 		pendulum.addComponent(new KeyboardRotateComponent());
 		this.getWorld().addEntity(pendulum);
 
 		// make the ground
 		Entity platform = factory.createTexturedSolid(new Vector2f(0f, 0f), 0f, new Vector2f(3f, 1f),
-				BodyType.KINEMATIC, MaterialFactory.createBasicMaterial("Textures/metalplate.jpg"));
+				BodyType.KINEMATIC, MaterialPool.materials.get("metalplate"));
 		platform.setData("pen_pendulum", pendulum);
 		platform.addComponent(new KinematicBalancerComponent());
 		this.getWorld().addEntity(platform);

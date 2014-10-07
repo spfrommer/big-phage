@@ -7,7 +7,8 @@ import java.util.List;
 import org.jbox2d.dynamics.BodyType;
 
 import engine.commons.utils.Vector2f;
-import engine.core.exec.PhysicsGame;
+import engine.core.exec.MaterialPool;
+import engine.core.exec.SimplePhysicsGame;
 import engine.core.frame.Entity;
 import engine.core.imp.animation.AnimationComponent;
 import engine.core.imp.render.LightComponent;
@@ -18,9 +19,20 @@ import glextra.renderer.Light.PointLight;
 import gltools.texture.Color;
 import gltools.vector.Vector3f;
 
-public class AnimationTest extends PhysicsGame {
+public class AnimationTest extends SimplePhysicsGame {
 	public AnimationTest() {
 		super("Animation Test");
+	}
+
+	@Override
+	public void createMaterials() {
+		MaterialPool.materials.put("grassbackground",
+				MaterialFactory.createBasicMaterial("Textures/grassbackground.png"));
+
+		for (int r = 0; r < 100; r++) {
+			Material material = MaterialFactory.createBasicMaterial(new Color(r / 100f, 0f, 0f));
+			MaterialPool.materials.put("red" + r, material);
+		}
 	}
 
 	@Override
@@ -29,19 +41,19 @@ public class AnimationTest extends PhysicsGame {
 
 		// make the background
 		Entity background = factory.createTexturedSolid(new Vector2f(0f, 0f), 0f, new Vector2f(10f, 10f),
-				BodyType.STATIC, MaterialFactory.createBasicMaterial("Textures/grassbackground.png"));
+				BodyType.STATIC, MaterialPool.materials.get("grassbackground"));
 		background.setUpdateOrder(0);
 		getWorld().addEntity(background);
 
 		Entity animated = factory.createTexturedSolid(new Vector2f(0f, 0f), 0f, new Vector2f(1f, 1f), BodyType.STATIC,
-				MaterialFactory.createBasicMaterial(new Color(1, 1, 1)));
+				MaterialPool.materials.get("red0"));
 		List<Material> frames = new ArrayList<Material>();
-		for (float i = 0; i < 1f; i += 0.01f) {
-			Material material = MaterialFactory.createBasicMaterial(new Color(i, 0f, 0f));
+		for (int i = 0; i < 100; i++) {
+			Material material = MaterialPool.materials.get("red" + i);
 			frames.add(material);
 		}
 		animated.setData("sys_frames", frames);
-		animated.setData("sys_timePerFrame", 1f / 60f);
+		animated.setData("sys_timePerFrame", 1f / 30f);
 		animated.setData("sys_repeatAnimation", true);
 		animated.addComponent(new AnimationComponent());
 		getWorld().addEntity(animated);
