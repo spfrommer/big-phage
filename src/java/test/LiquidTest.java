@@ -1,6 +1,7 @@
 package test;
 
 import java.awt.geom.Path2D;
+import java.util.Arrays;
 
 import org.jbox2d.dynamics.BodyType;
 
@@ -63,15 +64,15 @@ public class LiquidTest extends PhysicsGame {
 
 		// make the fountain
 		Entity liquidFountain = new Entity(getWorld());
+		liquidFountain.setData("sys_fountainPosition", new Vector2f(2.5f, 3f));
 		liquidFountain.addComponent(new FountainComponent((Liquid) liquid.getData("sys_liquid"), getPhysicsManager()));
-		liquidFountain.setData("sys_fountainposition", new Vector2f(2.5f, 3f));
 		getWorld().addEntity(liquidFountain);
 
 		// add the light
 		Entity light = new Entity(getWorld());
+		light.setData("sys_lights", Arrays.asList(new PointLight(new Vector3f(0f, 0f, 5f), new Vector3f(0f, 0f, 0.05f),
+				new Color(1f, 1f, 1f), new Color(0.1f, 0.1f, 0.1f, 0.1f))));
 		light.addComponent(new LightComponent());
-		light.setData("sys_light", new PointLight(new Vector3f(0f, 0f, 5f), new Vector3f(0f, 0f, 0.05f), new Color(1f,
-				1f, 1f), new Color(0.1f, 0.1f, 0.1f, 0.1f)));
 		getWorld().addEntity(light);
 
 		getKeyboard().addListener(new KeyListener() {

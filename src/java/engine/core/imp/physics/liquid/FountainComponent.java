@@ -20,7 +20,7 @@ import engine.core.imp.physics.PhysicsManager;
  * A component that adds particles to a Liquid.
  */
 public class FountainComponent extends Component {
-	private static final Set<String> IDENTIFIERS = new HashSet<String>(Arrays.asList("sys_fountainposition"));
+	private static final Set<String> IDENTIFIERS = new HashSet<String>(Arrays.asList("sys_fountainPosition"));
 	private Liquid m_liquid;
 	private PhysicsManager m_physics;
 	private float m_spawnTime = 1f / 60f;
@@ -33,7 +33,7 @@ public class FountainComponent extends Component {
 
 	@Override
 	public void update(float time, GameState state) {
-		Vector2f position = (Vector2f) getData("sys_fountainposition");
+		Vector2f position = (Vector2f) getData("sys_fountainPosition");
 
 		m_curTime += time;
 

@@ -1,5 +1,7 @@
 package test.pendulum;
 
+import java.util.Arrays;
+
 import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.BodyType;
 import org.jbox2d.dynamics.joints.RevoluteJointDef;
@@ -46,9 +48,9 @@ public class PendulumTest extends PhysicsGame {
 
 		// add the light
 		Entity light = new Entity(getWorld());
+		light.setData("sys_lights", Arrays.asList(new PointLight(new Vector3f(0f, 0f, 5f), new Vector3f(0f, 0f, 0.05f),
+				new Color(1f, 1f, 1f), new Color(0.1f, 0.1f, 0.1f, 0.1f))));
 		light.addComponent(new LightComponent());
-		light.setData("sys_light", new PointLight(new Vector3f(0f, 0f, 5f), new Vector3f(0f, 0f, 0.05f), new Color(1f,
-				1f, 1f), new Color(0.1f, 0.1f, 0.1f, 0.1f)));
 		getWorld().addEntity(light);
 	}
 

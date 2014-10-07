@@ -19,6 +19,10 @@ public abstract class Component {
 		return m_entity.getData(identifier);
 	}
 
+	protected void setData(String identifier, Object data) {
+		m_entity.setData(identifier, data);
+	}
+
 	public abstract void update(float time, GameState state);
 
 	public abstract Set<String> getDataIdentifiers();

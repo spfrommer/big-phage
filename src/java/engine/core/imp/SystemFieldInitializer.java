@@ -11,13 +11,15 @@ import engine.commons.utils.Vector2f;
 import engine.core.frame.FieldInitializer;
 import engine.core.imp.physics.liquid.Liquid;
 import engine.core.imp.render.MaterialFactory;
+import glextra.material.Material;
 import glextra.renderer.Light.PointLight;
 import gltools.texture.Color;
 import gltools.vector.Vector3f;
 
 public class SystemFieldInitializer implements FieldInitializer {
 	private static final Set<String> IDENTIFIERS = new HashSet<String>(Arrays.asList("sys_position", "sys_rotation",
-			"sys_material", "sys_dimensions", "sys_body", "sys_liquid", "sys_fountainposition", "sys_light"));
+			"sys_material", "sys_dimensions", "sys_body", "sys_liquid", "sys_fountainPosition", "sys_lights",
+			"sys_frames", "sys_timePerFrame", "sys_repeatAnimation"));
 
 	@Override
 	public Set<String> getDataIdentifiers() {
@@ -38,11 +40,17 @@ public class SystemFieldInitializer implements FieldInitializer {
 			return null;
 		if (identifier.equals("sys_liquid"))
 			return new Liquid(new ArrayList<Body>(), 0.1f, 0.03f, new Vector2f(0f, 0f), 10f);
-		if (identifier.equals("sys_fountainposition"))
+		if (identifier.equals("sys_fountainPosition"))
 			return new Vector2f(0f, 0f);
-		if (identifier.equals("sys_light"))
-			return new PointLight(new Vector3f(0f, 0f, 3f), new Vector3f(0f, 0f, 0.05f), new Color(1f, 1f, 1f),
-					new Color(0.1f, 0.1f, 0.1f, 0.1f));
+		if (identifier.equals("sys_lights"))
+			return Arrays.asList(new PointLight(new Vector3f(0f, 0f, 3f), new Vector3f(0f, 0f, 0.05f), new Color(1f,
+					1f, 1f), new Color(0.1f, 0.1f, 0.1f, 0.1f)));
+		if (identifier.equals("sys_frames"))
+			return new ArrayList<Material>();
+		if (identifier.equals("sys_timePerFrame"))
+			return 1f / 60f;
+		if (identifier.equals("sys_repeatAnimation"))
+			return false;
 
 		return null;
 	}
