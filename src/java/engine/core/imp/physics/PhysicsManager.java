@@ -30,9 +30,26 @@ public class PhysicsManager extends DataManager {
 	private Map<Entity, Body> m_bodies = new HashMap<Entity, Body>();
 	private Map<Entity, Liquid> m_liquids = new HashMap<Entity, Liquid>();
 	private World m_world = new World(new Vec2(0, -10));
+	private ManagerFilter m_collisionFilter = new ManagerFilter();
+	private ManagerHandler m_collisionHandler = new ManagerHandler();
 
 	public PhysicsManager() {
+		m_world.setContactFilter(m_collisionFilter);
+		m_world.setContactListener(m_collisionHandler);
+	}
 
+	/**
+	 * @return the collision filter
+	 */
+	public ManagerFilter getCollisionFilter() {
+		return m_collisionFilter;
+	}
+
+	/**
+	 * @return the collision handler
+	 */
+	public ManagerHandler getCollisionHandler() {
+		return m_collisionHandler;
 	}
 
 	/**
@@ -47,6 +64,7 @@ public class PhysicsManager extends DataManager {
 		}
 
 		Body body = m_world.createBody(bodyDef);
+		body.setUserData(entity);
 		m_bodies.put(entity, body);
 
 		entity.directSetData("sys_type", State.SOLID);
@@ -54,8 +72,12 @@ public class PhysicsManager extends DataManager {
 	}
 
 	/**
+	 * Will make a Body not associated with an Entity (it will not receive collision events). In order to do this,
+	 * either use createSolid() or set the Body's user data to be the Entity that should be associated with the Event;
+	 * also add the Event that should be triggered to the CollisionHandler.
+	 * 
 	 * @param bodyDef
-	 * @return a standalone Body not attached to any Entity
+	 * @return a Body
 	 */
 	public Body createBody(BodyDef bodyDef) {
 		return m_world.createBody(bodyDef);
@@ -92,25 +114,6 @@ public class PhysicsManager extends DataManager {
 	}
 
 	/**
-	 * Creates a Joint and returns it.
-	 * 
-	 * @param def
-	 * @return the created Joint
-	 */
-	public Joint createJoint(JointDef def) {
-		return m_world.createJoint(def);
-	}
-
-	/**
-	 * Destroys a Joint.
-	 * 
-	 * @param joint
-	 */
-	public void destroyJoint(Joint joint) {
-		m_world.destroyJoint(joint);
-	}
-
-	/**
 	 * @param def
 	 * @return the created Liquid
 	 */
@@ -127,6 +130,25 @@ public class PhysicsManager extends DataManager {
 		}
 
 		return new Liquid(particles, def.getParticleRadius(), def.getDensity(), def.getOrigin(), def.getMaxDist());
+	}
+
+	/**
+	 * Creates a Joint and returns it.
+	 * 
+	 * @param def
+	 * @return the created Joint
+	 */
+	public Joint createJoint(JointDef def) {
+		return m_world.createJoint(def);
+	}
+
+	/**
+	 * Destroys a Joint.
+	 * 
+	 * @param joint
+	 */
+	public void destroyJoint(Joint joint) {
+		m_world.destroyJoint(joint);
 	}
 
 	@Override
