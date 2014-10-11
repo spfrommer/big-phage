@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import engine.core.exec.GameState;
+import engine.core.imp.SystemFieldInitializer;
 import engine.core.imp.group.GroupManager;
 
 public class World {
@@ -24,6 +25,7 @@ public class World {
 
 	public World() {
 		this.addDataManager(m_groupManager);
+		this.addFieldInitializer(new SystemFieldInitializer());
 	}
 
 	public GroupManager getGroupManager() {

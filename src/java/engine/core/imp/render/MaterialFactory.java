@@ -94,6 +94,35 @@ public class MaterialFactory {
 	}
 
 	/**
+	 * @param texture
+	 * @return a textured Material
+	 */
+	public static Material createBasicUnlightedMaterial(String texture) {
+		if (locator == null)
+			locator = new ClasspathResourceLocator();
+
+		Material mat = null;
+		try {
+			mat = MaterialXMLLoader.s_load("Materials/2d_deferred.mat", locator, GlobalParams.getInstance()).get(0);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ShaderCompileException e) {
+			e.printStackTrace();
+		} catch (ProgramLinkException e) {
+			e.printStackTrace();
+		}
+
+		try {
+			mat.setBoolean("useLighting", false);
+			mat.setTexture2D("materialDiffuseTexture", TextureFactory.s_loadTexture(texture, locator));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return mat;
+	}
+
+	/**
 	 * Creates a Material with a bumpMap and a texture.
 	 * 
 	 * @param texture

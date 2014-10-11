@@ -1,7 +1,6 @@
 package engine.core.exec;
 
 import engine.core.frame.World;
-import engine.core.imp.SystemFieldInitializer;
 import engine.core.imp.physics.PhysicsManager;
 import engine.core.presets.PhysicsGameFactory;
 
@@ -23,7 +22,6 @@ public abstract class SimplePhysicsGame extends Game {
 	public void init() {
 		m_factory = new PhysicsGameFactory(m_world, m_physics);
 
-		m_world.addFieldInitializer(new SystemFieldInitializer());
 		m_world.addDataManager(m_physics);
 		setCurrentWorld(m_world);
 	}

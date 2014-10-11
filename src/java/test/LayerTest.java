@@ -24,24 +24,25 @@ public class LayerTest extends SimplePhysicsGame {
 	public void createMaterials() {
 		MaterialPool.materials.put("metalplate", MaterialFactory.createBasicMaterial("Textures/metalplate.png"));
 		MaterialPool.materials.put("grassbackground",
-				MaterialFactory.createBasicMaterial("Textures/grassbackground.png"));
+				MaterialFactory.createBasicUnlightedMaterial("Textures/grassbackground.png"));
 	}
 
-	// LAYER 0 IS RESERVED FOR THE CAMERA, 1 FOR LIGHTS, 2 IS USUALLY BACKGROUND, AND 3/4 ARE ANY ADDITIONAL OBJECTS
+	// LAYER 0 IS RESERVED FOR THE CAMERA, 1 FOR LIGHTS, 2 IS USUALLY
+	// BACKGROUND, AND 3/4 ARE ANY ADDITIONAL OBJECTS
 
 	@Override
 	public void onStart() {
 		PhysicsGameFactory factory = this.getGameFactory();
 
 		// make the background
-		Entity background = factory.createTexturedSolid(new Vector2f(0f, 0f), 0f, new Vector2f(10f, 10f),
+		Entity background = factory.createTexturedSolid(new Vector2f(0f, 0f), 0f, new Vector2f(8f, 8f),
 				BodyType.STATIC, MaterialPool.materials.get("grassbackground"));
 		background.setUpdateOrder(2);
 		getWorld().addEntity(background);
 
 		// make the wall
 		Entity wall = factory.createTexturedSolid(new Vector2f(1.75f, 1.5f), 0f, new Vector2f(0.5f, 4f),
-				BodyType.KINEMATIC, MaterialPool.materials.get("metalplate"));
+				BodyType.STATIC, MaterialPool.materials.get("metalplate"));
 		wall.setUpdateOrder(3);
 		getWorld().addEntity(wall);
 

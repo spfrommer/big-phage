@@ -34,15 +34,12 @@ public class ParalaxRenderComponent extends Component {
 
 		renderer.setMaterial(mat);
 		renderer.pushModel();
-		System.out.println("Scaling: " + layer);
 		renderer.scale(layer, layer);
 		renderer.translate(transX, transY);
 		renderer.translate(position.x, position.y);
 		renderer.rotate(rotation);
 		renderer.fillRect(-dimensions.x / 2, -dimensions.y / 2, dimensions.x, dimensions.y);
-		System.out.println("Initial: " + renderer.getModelScale());
 		renderer.popModel();
-		System.out.println("After: " + renderer.getModelScale());
 	}
 
 	@Override

@@ -26,9 +26,10 @@ public class ParalaxTest extends SimplePhysicsGame {
 
 	@Override
 	public void createMaterials() {
-		MaterialPool.materials.put("grassbackground",
+		MaterialPool.materials.put("starbackground1",
 				MaterialFactory.createBasicMaterial("Textures/starbackground1.jpg"));
-		MaterialPool.materials.put("metalplate", MaterialFactory.createBasicMaterial("Textures/starbackground2.png"));
+		MaterialPool.materials.put("starbackground2",
+				MaterialFactory.createBasicMaterial("Textures/starbackground2.png"));
 	}
 
 	// LAYER 0 IS RESERVED FOR THE CAMERA, 1 FOR LIGHTS, 2 IS USUALLY
@@ -39,18 +40,18 @@ public class ParalaxTest extends SimplePhysicsGame {
 		PhysicsGameFactory factory = this.getGameFactory();
 
 		// make the background
-		Entity background = factory.createTexturedSolid(new Vector2f(0f, 0f), 0f, new Vector2f(15f, 15f),
-				BodyType.STATIC, MaterialPool.materials.get("grassbackground"), new ParalaxRenderComponent());
-		background.setUpdateOrder(2);
-		background.setData("sys_paralaxLayer", 0);
-		getWorld().addEntity(background);
+		Entity stars1 = factory.createTexturedSolid(new Vector2f(0f, 0f), 0f, new Vector2f(15f, 15f), BodyType.STATIC,
+				MaterialPool.materials.get("starbackground1"), new ParalaxRenderComponent());
+		stars1.setUpdateOrder(2);
+		stars1.setData("sys_paralaxLayer", 0);
+		getWorld().addEntity(stars1);
 
 		// make the wall
-		Entity wall = factory.createTexturedSolid(new Vector2f(1.75f, 1.5f), 0f, new Vector2f(15f, 15f),
-				BodyType.KINEMATIC, MaterialPool.materials.get("metalplate"), new ParalaxRenderComponent());
-		wall.setUpdateOrder(3);
-		wall.setData("sys_paralaxLayer", 2);
-		getWorld().addEntity(wall);
+		Entity stars2 = factory.createTexturedSolid(new Vector2f(1.75f, 1.5f), 0f, new Vector2f(15f, 15f),
+				BodyType.STATIC, MaterialPool.materials.get("starbackground2"), new ParalaxRenderComponent());
+		stars2.setUpdateOrder(3);
+		stars2.setData("sys_paralaxLayer", 2);
+		getWorld().addEntity(stars2);
 
 		// add the light
 		Entity light = new Entity(getWorld());
