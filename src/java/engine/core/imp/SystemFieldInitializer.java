@@ -21,7 +21,7 @@ public class SystemFieldInitializer implements FieldInitializer {
 	private static final Set<String> IDENTIFIERS = new HashSet<String>(Arrays.asList("sys_position", "sys_rotation",
 			"sys_material", "sys_dimensions", "sys_body", "sys_liquid", "sys_fountainPosition", "sys_lights",
 			"sys_frames", "sys_timePerFrame", "sys_repeatAnimation", "sys_groups", "sys_camPosition", "sys_camScale",
-			"sys_camRotation"));
+			"sys_camRotation", "sys_paralaxLayer"));
 
 	public Set<String> getDataIdentifiers() {
 		return IDENTIFIERS;
@@ -59,6 +59,8 @@ public class SystemFieldInitializer implements FieldInitializer {
 			return new Vector2f(1f, 1f);
 		if (identifier.equals("sys_camRotation"))
 			return 0f;
+		if (identifier.equals("sys_paralaxLayer"))
+			return 0;
 
 		return null;
 	}

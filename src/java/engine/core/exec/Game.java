@@ -27,7 +27,8 @@ public abstract class Game {
 	public void start() {
 		m_display = makeDisplay(m_title);
 		m_state.renderer = LWJGLRenderer2D.getInstance();
-		m_state.renderer.init(m_display.getWidth(), m_display.getHeight(), -5f, 5f, 5f, -5f);
+		m_state.renderer.init(m_display.getWidth(), m_display.getHeight(), -5f,
+				5f, 5f, -5f);
 		readDevices(m_display, m_state);
 
 		PointLight.init();
@@ -35,7 +36,9 @@ public abstract class Game {
 		createMaterials();
 		onStart();
 
-		while (!m_state.keyboard.isKeyPressed(m_state.keyboard.getKey("ESCAPE")) && !m_display.closeRequested()) {
+		while (!m_state.keyboard
+				.isKeyPressed(m_state.keyboard.getKey("ESCAPE"))
+				&& !m_display.closeRequested()) {
 			m_state.keyboard.poll();
 			m_state.mouse.poll();
 			m_state.renderer.clear();
@@ -80,7 +83,7 @@ public abstract class Game {
 	}
 
 	private Display makeDisplay(String title) {
-		LWJGLDisplay display = new LWJGLDisplay(1024, 1024, true);
+		LWJGLDisplay display = new LWJGLDisplay(512, 512, true);
 		display.setTitle(title);
 		display.init();
 		return display;

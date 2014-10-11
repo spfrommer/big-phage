@@ -64,8 +64,8 @@ public class PhysicsFactory {
 	}
 
 	/**
-	 * Makes a LiquidDef by populating a polygon with particles particleDistance distance apart and of radius
-	 * particleRadius.
+	 * Makes a LiquidDef by populating a polygon with particles particleDistance
+	 * distance apart and of radius particleRadius.
 	 * 
 	 * @param poly
 	 * @param particleDistance

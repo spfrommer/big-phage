@@ -1,0 +1,90 @@
+package test;
+
+import java.util.Arrays;
+
+import org.jbox2d.dynamics.BodyType;
+
+import engine.commons.utils.Vector2f;
+import engine.core.exec.MaterialPool;
+import engine.core.exec.SimplePhysicsGame;
+import engine.core.frame.Entity;
+import engine.core.imp.render.LightComponent;
+import engine.core.imp.render.MaterialFactory;
+import engine.core.imp.render.ParalaxRenderComponent;
+import engine.core.imp.render.StationaryCameraControllerComponent;
+import engine.core.presets.PhysicsGameFactory;
+import glextra.renderer.Light.PointLight;
+import gltools.texture.Color;
+import gltools.vector.Vector3f;
+
+public class ParalaxTest extends SimplePhysicsGame {
+	private Entity m_camera;
+
+	public ParalaxTest() {
+		super("Paralax Test");
+	}
+
+	@Override
+	public void createMaterials() {
+		MaterialPool.materials.put("grassbackground",
+				MaterialFactory.createBasicMaterial("Textures/starbackground1.jpg"));
+		MaterialPool.materials.put("metalplate", MaterialFactory.createBasicMaterial("Textures/starbackground2.png"));
+	}
+
+	// LAYER 0 IS RESERVED FOR THE CAMERA, 1 FOR LIGHTS, 2 IS USUALLY
+	// BACKGROUND, AND 3/4 ARE ANY ADDITIONAL OBJECTS
+
+	@Override
+	public void onStart() {
+		PhysicsGameFactory factory = this.getGameFactory();
+
+		// make the background
+		Entity background = factory.createTexturedSolid(new Vector2f(0f, 0f), 0f, new Vector2f(15f, 15f),
+				BodyType.STATIC, MaterialPool.materials.get("grassbackground"), new ParalaxRenderComponent());
+		background.setUpdateOrder(2);
+		background.setData("sys_paralaxLayer", 0);
+		getWorld().addEntity(background);
+
+		// make the wall
+		Entity wall = factory.createTexturedSolid(new Vector2f(1.75f, 1.5f), 0f, new Vector2f(15f, 15f),
+				BodyType.KINEMATIC, MaterialPool.materials.get("metalplate"), new ParalaxRenderComponent());
+		wall.setUpdateOrder(3);
+		wall.setData("sys_paralaxLayer", 2);
+		getWorld().addEntity(wall);
+
+		// add the light
+		Entity light = new Entity(getWorld());
+		light.setData("sys_lights", Arrays.asList(new PointLight(new Vector3f(5f, 5f, 5f), new Vector3f(0f, 0f, 0.05f),
+				new Color(1f, 1f, 1f), new Color(0.1f, 0.1f, 0.1f, 0.1f))));
+		light.addComponent(new LightComponent());
+		light.setUpdateOrder(1);
+		getWorld().addEntity(light);
+
+		// add the camera
+		m_camera = new Entity(getWorld());
+		m_camera.setData("sys_camPosition", new Vector2f(3f, 3f));
+		m_camera.setData("sys_camScale", new Vector2f(1f, 1f));
+		m_camera.setData("sys_camRotation", 0f);
+		m_camera.setUpdateOrder(0);
+		m_camera.addComponent(new StationaryCameraControllerComponent());
+		getWorld().addEntity(m_camera);
+	}
+
+	private Vector2f camPosition = new Vector2f(0f, 0f);
+
+	@Override
+	public void preUpdate() {
+		camPosition.x += 0.01f;
+		m_camera.setData("sys_camPosition", camPosition);
+	}
+
+	@Override
+	public void postUpdate() {
+
+	}
+
+	public static void main(String[] args) {
+		ParalaxTest test = new ParalaxTest();
+		test.start();
+	}
+}
