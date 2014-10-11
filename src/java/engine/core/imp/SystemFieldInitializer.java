@@ -20,7 +20,8 @@ import gltools.vector.Vector3f;
 public class SystemFieldInitializer implements FieldInitializer {
 	private static final Set<String> IDENTIFIERS = new HashSet<String>(Arrays.asList("sys_position", "sys_rotation",
 			"sys_material", "sys_dimensions", "sys_body", "sys_liquid", "sys_fountainPosition", "sys_lights",
-			"sys_frames", "sys_timePerFrame", "sys_repeatAnimation", "sys_groups"));
+			"sys_frames", "sys_timePerFrame", "sys_repeatAnimation", "sys_groups", "sys_camPosition", "sys_camScale",
+			"sys_camRotation"));
 
 	@Override
 	public Set<String> getDataIdentifiers() {
@@ -54,6 +55,12 @@ public class SystemFieldInitializer implements FieldInitializer {
 			return false;
 		if (identifier.equals("sys_groups"))
 			return new TagList();
+		if (identifier.equals("sys_camPosition"))
+			return new Vector2f(0f, 0f);
+		if (identifier.equals("sys_camScale"))
+			return new Vector2f(1f, 1f);
+		if (identifier.equals("sys_camRotation"))
+			return 0f;
 
 		return null;
 	}

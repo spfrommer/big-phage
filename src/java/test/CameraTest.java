@@ -10,14 +10,15 @@ import engine.core.exec.SimplePhysicsGame;
 import engine.core.frame.Entity;
 import engine.core.imp.render.LightComponent;
 import engine.core.imp.render.MaterialFactory;
+import engine.core.imp.render.StationaryCameraControllerComponent;
 import engine.core.presets.PhysicsGameFactory;
 import glextra.renderer.Light.PointLight;
 import gltools.texture.Color;
 import gltools.vector.Vector3f;
 
-public class LayerTest extends SimplePhysicsGame {
-	public LayerTest() {
-		super("Layer Test");
+public class CameraTest extends SimplePhysicsGame {
+	public CameraTest() {
+		super("Camera Test");
 	}
 
 	@Override
@@ -34,13 +35,13 @@ public class LayerTest extends SimplePhysicsGame {
 		PhysicsGameFactory factory = this.getGameFactory();
 
 		// make the background
-		Entity background = factory.createTexturedSolid(new Vector2f(0f, 0f), 0f, new Vector2f(10f, 10f),
+		Entity background = factory.createTexturedSolid(new Vector2f(0f, 0f), 0f, new Vector2f(8f, 8f),
 				BodyType.STATIC, MaterialPool.materials.get("grassbackground"));
 		background.setUpdateOrder(2);
 		getWorld().addEntity(background);
 
 		// make the wall
-		Entity wall = factory.createTexturedSolid(new Vector2f(1.75f, 1.5f), 0f, new Vector2f(0.5f, 4f),
+		Entity wall = factory.createTexturedSolid(new Vector2f(1.75f, 1.5f), 0f, new Vector2f(0.5f, 2f),
 				BodyType.KINEMATIC, MaterialPool.materials.get("metalplate"));
 		wall.setUpdateOrder(3);
 		getWorld().addEntity(wall);
@@ -52,6 +53,15 @@ public class LayerTest extends SimplePhysicsGame {
 		light.addComponent(new LightComponent());
 		light.setUpdateOrder(1);
 		getWorld().addEntity(light);
+
+		// add the camera
+		Entity camera = new Entity(getWorld());
+		camera.setData("sys_camPosition", new Vector2f(3f, 3f));
+		camera.setData("sys_camScale", new Vector2f(1f, 1f));
+		camera.setData("sys_camRotation", 0f);
+		camera.setUpdateOrder(0);
+		camera.addComponent(new StationaryCameraControllerComponent());
+		getWorld().addEntity(camera);
 	}
 
 	@Override
@@ -65,7 +75,7 @@ public class LayerTest extends SimplePhysicsGame {
 	}
 
 	public static void main(String[] args) {
-		LayerTest test = new LayerTest();
+		CameraTest test = new CameraTest();
 		test.start();
 	}
 }
