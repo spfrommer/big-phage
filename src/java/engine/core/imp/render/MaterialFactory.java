@@ -8,7 +8,9 @@ import gltools.ResourceLocator.ClasspathResourceLocator;
 import gltools.shader.Program.ProgramLinkException;
 import gltools.shader.Shader.ShaderCompileException;
 import gltools.texture.Color;
+import gltools.texture.Texture2D;
 import gltools.texture.TextureFactory;
+import gltools.texture.TextureWrapMode;
 
 import java.io.IOException;
 
@@ -97,7 +99,7 @@ public class MaterialFactory {
 	 * @param texture
 	 * @return a textured Material
 	 */
-	public static Material createBasicUnlightedMaterial(String texture) {
+	public static Material createBasicMaterial(String texture, boolean lighted, boolean repeated) {
 		if (locator == null)
 			locator = new ClasspathResourceLocator();
 
@@ -113,8 +115,16 @@ public class MaterialFactory {
 		}
 
 		try {
-			mat.setBoolean("useLighting", false);
-			mat.setTexture2D("materialDiffuseTexture", TextureFactory.s_loadTexture(texture, locator));
+			mat.setBoolean("useLighting", lighted);
+			Texture2D t = TextureFactory.s_loadTexture(texture, locator);
+			if (repeated) {
+				t.bind();
+				t.setSWrapMode(TextureWrapMode.REPEAT);
+				t.setTWrapMode(TextureWrapMode.REPEAT);
+				t.loadParams();
+				t.unbind();
+			}
+			mat.setTexture2D("materialDiffuseTexture", t);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

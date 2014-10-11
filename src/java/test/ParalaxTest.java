@@ -43,14 +43,14 @@ public class ParalaxTest extends SimplePhysicsGame {
 		Entity stars1 = factory.createTexturedSolid(new Vector2f(0f, 0f), 0f, new Vector2f(15f, 15f), BodyType.STATIC,
 				MaterialPool.materials.get("starbackground1"), new ParalaxRenderComponent());
 		stars1.setUpdateOrder(2);
-		stars1.setData("sys_paralaxLayer", 0);
+		stars1.setData("sys_paralaxDepth", 0f);
 		getWorld().addEntity(stars1);
 
 		// make the wall
 		Entity stars2 = factory.createTexturedSolid(new Vector2f(1.75f, 1.5f), 0f, new Vector2f(15f, 15f),
 				BodyType.STATIC, MaterialPool.materials.get("starbackground2"), new ParalaxRenderComponent());
 		stars2.setUpdateOrder(3);
-		stars2.setData("sys_paralaxLayer", 2);
+		stars2.setData("sys_paralaxDepth", 2f);
 		getWorld().addEntity(stars2);
 
 		// add the light

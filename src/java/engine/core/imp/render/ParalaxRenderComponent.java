@@ -12,7 +12,7 @@ import glextra.renderer.Renderer2D;
 
 public class ParalaxRenderComponent extends Component {
 	private static final Set<String> IDENTIFIERS = new HashSet<String>(Arrays.asList("sys_position", "sys_dimensions",
-			"sys_rotation", "sys_material", "sys_paralaxLayer"));
+			"sys_rotation", "sys_material", "sys_paralaxDepth", "sys_repeatMaterial", "sys_repeatCount"));
 
 	public ParalaxRenderComponent() {
 
@@ -24,7 +24,9 @@ public class ParalaxRenderComponent extends Component {
 		Vector2f dimensions = (Vector2f) getData("sys_dimensions");
 		float rotation = (Float) getData("sys_rotation");
 		Material mat = (Material) getData("sys_material");
-		float layer = (float) ((Integer) getData("sys_paralaxLayer") + 1);
+		float layer = (Float) getData("sys_paralaxDepth") + 1;
+		boolean repeat = (Boolean) getData("sys_repeatMaterial");
+		float repeatCount = (Float) getData("sys_repeatCount");
 		Renderer2D renderer = state.renderer;
 
 		float camX = renderer.getViewTranslation().x;
@@ -38,7 +40,12 @@ public class ParalaxRenderComponent extends Component {
 		renderer.translate(transX, transY);
 		renderer.translate(position.x, position.y);
 		renderer.rotate(rotation);
-		renderer.fillRect(-dimensions.x / 2, -dimensions.y / 2, dimensions.x, dimensions.y);
+		if (repeat) {
+			renderer.fillRect(-(dimensions.x * repeatCount) / 2, -(dimensions.y * repeatCount) / 2, dimensions.x
+					* repeatCount, dimensions.y * repeatCount, repeatCount, repeatCount);
+		} else {
+			renderer.fillRect(-dimensions.x / 2, -dimensions.y / 2, dimensions.x, dimensions.y);
+		}
 		renderer.popModel();
 	}
 
