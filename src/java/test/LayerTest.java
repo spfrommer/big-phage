@@ -22,7 +22,7 @@ public class LayerTest extends SimplePhysicsGame {
 
 	@Override
 	public void createMaterials() {
-		MaterialPool.materials.put("metalplate", MaterialFactory.createBasicMaterial("Textures/metalplate.jpg"));
+		MaterialPool.materials.put("metalplate", MaterialFactory.createBasicMaterial("Textures/metalplate.png"));
 		MaterialPool.materials.put("grassbackground",
 				MaterialFactory.createBasicMaterial("Textures/grassbackground.png"));
 	}

@@ -1,4 +1,4 @@
-package engine.core.imp.physics;
+package engine.core.imp.physics.collision;
 
 import java.util.HashMap;
 import java.util.Map;

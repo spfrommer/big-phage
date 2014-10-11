@@ -1,15 +1,14 @@
-package test.collision;
+package engine.core.imp.physics.collision;
 
 import engine.core.frame.Entity;
-import engine.core.imp.physics.CollisionFilter;
 
 /**
  * Allows collisions with all but one Entity.
  */
-public class ExclusiveFilter implements CollisionFilter {
+public class ExclusiveEntityFilter implements CollisionFilter {
 	private Entity m_exclude;
 
-	public ExclusiveFilter(Entity exclude) {
+	public ExclusiveEntityFilter(Entity exclude) {
 		m_exclude = exclude;
 	}
 

@@ -20,6 +20,8 @@ import org.jbox2d.dynamics.joints.JointDef;
 import engine.commons.utils.Vector2f;
 import engine.core.frame.DataManager;
 import engine.core.frame.Entity;
+import engine.core.imp.physics.collision.ManagerFilter;
+import engine.core.imp.physics.collision.ManagerHandler;
 import engine.core.imp.physics.liquid.Liquid;
 import engine.core.imp.physics.liquid.LiquidDef;
 import engine.core.imp.physics.liquid.PhysicsConstants;

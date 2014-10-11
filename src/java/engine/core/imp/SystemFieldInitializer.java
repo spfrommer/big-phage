@@ -9,6 +9,7 @@ import org.jbox2d.dynamics.Body;
 
 import engine.commons.utils.Vector2f;
 import engine.core.frame.FieldInitializer;
+import engine.core.imp.physics.collision.TagList;
 import engine.core.imp.physics.liquid.Liquid;
 import engine.core.imp.render.MaterialFactory;
 import glextra.material.Material;
@@ -19,7 +20,7 @@ import gltools.vector.Vector3f;
 public class SystemFieldInitializer implements FieldInitializer {
 	private static final Set<String> IDENTIFIERS = new HashSet<String>(Arrays.asList("sys_position", "sys_rotation",
 			"sys_material", "sys_dimensions", "sys_body", "sys_liquid", "sys_fountainPosition", "sys_lights",
-			"sys_frames", "sys_timePerFrame", "sys_repeatAnimation"));
+			"sys_frames", "sys_timePerFrame", "sys_repeatAnimation", "sys_groups"));
 
 	@Override
 	public Set<String> getDataIdentifiers() {
@@ -51,6 +52,8 @@ public class SystemFieldInitializer implements FieldInitializer {
 			return 1f / 60f;
 		if (identifier.equals("sys_repeatAnimation"))
 			return false;
+		if (identifier.equals("sys_groups"))
+			return new TagList();
 
 		return null;
 	}

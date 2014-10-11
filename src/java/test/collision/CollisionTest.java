@@ -8,6 +8,8 @@ import engine.commons.utils.Vector2f;
 import engine.core.exec.MaterialPool;
 import engine.core.exec.SimplePhysicsGame;
 import engine.core.frame.Entity;
+import engine.core.imp.physics.collision.InclusiveGroupFilter;
+import engine.core.imp.physics.collision.TagList;
 import engine.core.imp.render.LightComponent;
 import engine.core.imp.render.MaterialFactory;
 import engine.core.presets.PhysicsGameFactory;
@@ -23,7 +25,7 @@ public class CollisionTest extends SimplePhysicsGame {
 
 	@Override
 	public void createMaterials() {
-		MaterialPool.materials.put("metalplate", MaterialFactory.createBasicMaterial("Textures/metalplate.jpg"));
+		MaterialPool.materials.put("metalplate", MaterialFactory.createBasicMaterial("Textures/metalplate.png"));
 	}
 
 	@Override
@@ -33,13 +35,15 @@ public class CollisionTest extends SimplePhysicsGame {
 		// make the ground
 		Entity ground = factory.createTexturedSolid(new Vector2f(0f, 0f), 0f, new Vector2f(2f, 1f), BodyType.KINEMATIC,
 				MaterialPool.materials.get("metalplate"));
+		ground.setData("sys_groups", new TagList("testgroup1"));
 		getWorld().addEntity(ground);
 
 		// make the brick
 		Entity brick = factory.createTexturedSolid(new Vector2f(1f, 3f), (float) Math.PI / 4 + 0.1f, new Vector2f(1f,
 				1f), BodyType.DYNAMIC, MaterialPool.materials.get("metalplate"));
 		this.getPhysicsManager().getCollisionHandler().addEvent(brick, new PrintEvent());
-		this.getPhysicsManager().getCollisionFilter().addFilter(brick, new ExclusiveFilter(ground));
+		this.getPhysicsManager().getCollisionFilter()
+				.addFilter(brick, new InclusiveGroupFilter(new TagList("testgroup2", "testgroup1")));
 		getWorld().addEntity(brick);
 
 		// add the light
