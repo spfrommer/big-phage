@@ -12,7 +12,6 @@ public class ExclusiveEntityFilter implements CollisionFilter {
 		m_exclude = exclude;
 	}
 
-	@Override
 	public boolean canCollideWith(Entity entity) {
 		return entity != m_exclude;
 	}

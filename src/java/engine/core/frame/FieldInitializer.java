@@ -12,12 +12,10 @@ public interface FieldInitializer {
 	public abstract Object createObjectFor(String identifier);
 
 	public static final FieldInitializer NONE = new FieldInitializer() {
-		@Override
 		public Set<String> getDataIdentifiers() {
 			return new HashSet<String>();
 		}
 
-		@Override
 		public Object createObjectFor(String identifier) {
 			throw new RuntimeException("NONE initializer for: " + identifier);
 		}

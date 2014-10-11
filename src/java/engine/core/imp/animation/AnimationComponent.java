@@ -28,8 +28,8 @@ public class AnimationComponent extends Component {
 	public void update(float time, GameState state) {
 		@SuppressWarnings("unchecked")
 		List<Material> frames = (List<Material>) getData("sys_frames");
-		float timePerFrame = (float) getData("sys_timePerFrame");
-		boolean repeat = (boolean) getData("sys_repeatAnimation");
+		float timePerFrame = (Float) getData("sys_timePerFrame");
+		boolean repeat = (Boolean) getData("sys_repeatAnimation");
 		m_frameCount = frames.size();
 
 		m_timeElapsed += time;

@@ -199,7 +199,7 @@ public class PhysicsManager extends DataManager {
 			updateData(entity, identifier);
 		}
 		if (identifier.equals("sys_rotation")) {
-			body.m_xf.q.set((float) data);
+			body.m_xf.q.set((Float) data);
 			updateData(entity, identifier);
 		}
 	}

@@ -15,7 +15,6 @@ public class TagList implements Iterable<String> {
 		m_tags.addAll(Arrays.asList(strings));
 	}
 
-	@Override
 	public Iterator<String> iterator() {
 		return m_tags.iterator();
 	}

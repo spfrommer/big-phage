@@ -23,12 +23,10 @@ public class SystemFieldInitializer implements FieldInitializer {
 			"sys_frames", "sys_timePerFrame", "sys_repeatAnimation", "sys_groups", "sys_camPosition", "sys_camScale",
 			"sys_camRotation"));
 
-	@Override
 	public Set<String> getDataIdentifiers() {
 		return IDENTIFIERS;
 	}
 
-	@Override
 	public Object createObjectFor(String identifier) {
 		if (identifier.equals("sys_position"))
 			return new Vector2f(0, 0);

@@ -84,7 +84,6 @@ public class LiquidTest extends SimplePhysicsGame {
 		getWorld().addEntity(light);
 
 		getGameState().keyboard.addListener(new KeyListener() {
-			@Override
 			public void keyPressed(Keyboard k, Key key) {
 				Material material = MaterialPool.materials.get("metalplate");
 				Entity box = getGameFactory().createTexturedSolid(
@@ -93,7 +92,6 @@ public class LiquidTest extends SimplePhysicsGame {
 				getWorld().addEntity(box);
 			}
 
-			@Override
 			public void keyReleased(Keyboard k, Key key) {
 
 			}

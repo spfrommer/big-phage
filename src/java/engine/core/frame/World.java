@@ -123,7 +123,6 @@ public class World {
 	}
 
 	private static class UpdateComparator implements Comparator<Entity> {
-		@Override
 		public int compare(Entity entity1, Entity entity2) {
 			int update1 = entity1.getUpdateOrder();
 			int update2 = entity2.getUpdateOrder();

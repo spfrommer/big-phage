@@ -26,7 +26,6 @@ public class ManagerHandler implements ContactListener {
 		m_events.get(entity).remove(event);
 	}
 
-	@Override
 	public void beginContact(Contact arg0) {
 		Entity entity1 = (Entity) arg0.getFixtureA().getBody().getUserData();
 		Entity entity2 = (Entity) arg0.getFixtureB().getBody().getUserData();
@@ -41,17 +40,14 @@ public class ManagerHandler implements ContactListener {
 		}
 	}
 
-	@Override
 	public void endContact(Contact arg0) {
 
 	}
 
-	@Override
 	public void postSolve(Contact arg0, ContactImpulse arg1) {
 
 	}
 
-	@Override
 	public void preSolve(Contact arg0, Manifold arg1) {
 
 	}

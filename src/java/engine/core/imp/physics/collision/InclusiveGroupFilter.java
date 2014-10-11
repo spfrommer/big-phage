@@ -13,7 +13,6 @@ public class InclusiveGroupFilter implements CollisionFilter {
 		m_include = include;
 	}
 
-	@Override
 	public boolean canCollideWith(Entity entity) {
 		TagList tags = (TagList) entity.getData("sys_groups");
 		if (m_include.intersects(tags))
