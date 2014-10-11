@@ -43,7 +43,7 @@ public abstract class Game {
 			m_state.renderer.startGeometry();
 
 			preUpdate();
-			m_current.update(0.0166666666666666f, m_state);
+			m_current.update(1 / (float) m_fps, m_state);
 			postUpdate();
 
 			m_state.renderer.finishGeometry();
