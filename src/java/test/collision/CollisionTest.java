@@ -1,6 +1,7 @@
 package test.collision;
 
 import java.util.Arrays;
+import java.util.List;
 
 import org.jbox2d.dynamics.BodyType;
 
@@ -8,8 +9,8 @@ import engine.commons.utils.Vector2f;
 import engine.core.exec.MaterialPool;
 import engine.core.exec.SimplePhysicsGame;
 import engine.core.frame.Entity;
+import engine.core.imp.group.TagList;
 import engine.core.imp.physics.collision.InclusiveGroupFilter;
-import engine.core.imp.physics.collision.TagList;
 import engine.core.imp.render.LightComponent;
 import engine.core.imp.render.MaterialFactory;
 import engine.core.presets.PhysicsGameFactory;
@@ -44,6 +45,7 @@ public class CollisionTest extends SimplePhysicsGame {
 		this.getPhysicsManager().getCollisionHandler().addEvent(brick, new PrintEvent());
 		this.getPhysicsManager().getCollisionFilter()
 				.addFilter(brick, new InclusiveGroupFilter(new TagList("testgroup2", "testgroup1")));
+		brick.setData("sys_groups", new TagList("testgroup1", "testgroup2"));
 		getWorld().addEntity(brick);
 
 		// add the light
@@ -52,6 +54,12 @@ public class CollisionTest extends SimplePhysicsGame {
 				new Color(1f, 1f, 1f), new Color(0.1f, 0.1f, 0.1f, 0.1f))));
 		light.addComponent(new LightComponent());
 		getWorld().addEntity(light);
+
+		List<Entity> group1 = getWorld().getGroupManager().getEntities("testgroup1");
+		System.out.println(group1.size());
+
+		List<Entity> group2 = getWorld().getGroupManager().getEntities("testgroup2");
+		System.out.println(group2.size());
 	}
 
 	@Override

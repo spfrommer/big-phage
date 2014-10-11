@@ -10,7 +10,7 @@ public abstract class DataManager {
 	private List<Entity> m_registeredEntities = new ArrayList<Entity>();
 
 	/**
-	 * Check if the DataManager manages and fields of the Entity, and if it does, adds the Entity and calls
+	 * Check if the DataManager manages the fields of the Entity, and if it does, adds the Entity and calls
 	 * entityRegistered().
 	 * 
 	 * @param entity

@@ -1,25 +1,23 @@
-package engine.core.imp.physics.collision;
+package engine.core.imp.group;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
-public class TagList {
+/**
+ * An immutable list of tags - used for groups.
+ */
+public class TagList implements Iterable<String> {
 	private ArrayList<String> m_tags = new ArrayList<String>();
-
-	public TagList() {
-	}
 
 	public TagList(String... strings) {
 		m_tags.addAll(Arrays.asList(strings));
 	}
 
-	public void addGroup(String group) {
-		m_tags.add(group);
-	}
-
-	public void removeGroup(String group) {
-		m_tags.remove(group);
+	@Override
+	public Iterator<String> iterator() {
+		return m_tags.iterator();
 	}
 
 	public boolean containsGroup(String group) {

@@ -1,6 +1,7 @@
 package engine.core.imp.physics.collision;
 
 import engine.core.frame.Entity;
+import engine.core.imp.group.TagList;
 
 /**
  * Allows collisions with all Entities but those who belong to certain groups ("sys_groups" field).

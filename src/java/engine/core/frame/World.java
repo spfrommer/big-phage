@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import engine.core.exec.GameState;
+import engine.core.imp.group.GroupManager;
 
 public class World {
 	private List<DataManager> m_managers = new ArrayList<DataManager>();
@@ -18,6 +19,16 @@ public class World {
 
 	private static final Comparator<Entity> s_updateComparator = new UpdateComparator();
 	private int m_lastUpdate = -1;
+
+	private GroupManager m_groupManager = new GroupManager();
+
+	public World() {
+		this.addDataManager(m_groupManager);
+	}
+
+	public GroupManager getGroupManager() {
+		return m_groupManager;
+	}
 
 	public void addDataManager(DataManager dm) {
 		m_managers.add(dm);
@@ -68,6 +79,10 @@ public class World {
 	}
 
 	public void addEntity(Entity e) {
+		for (String s : e.getDataIdentifiers()) {
+			DataManager manager = getRegisteredManager(s);
+			manager.checkRegister(e);
+		}
 		e.setWorld(this);
 		m_entities.add(e);
 		Collections.sort(m_entities, s_updateComparator);

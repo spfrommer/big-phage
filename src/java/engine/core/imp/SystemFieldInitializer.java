@@ -9,7 +9,7 @@ import org.jbox2d.dynamics.Body;
 
 import engine.commons.utils.Vector2f;
 import engine.core.frame.FieldInitializer;
-import engine.core.imp.physics.collision.TagList;
+import engine.core.imp.group.TagList;
 import engine.core.imp.physics.liquid.Liquid;
 import engine.core.imp.render.MaterialFactory;
 import glextra.material.Material;

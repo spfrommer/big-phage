@@ -50,7 +50,7 @@ public class Entity {
 		m_world = world;
 	}
 
-	/*public void resetWorld(World world) {
+	public void resetWorld(World world) {
 		m_world = world;
 
 		for (Component c : m_components) {
@@ -58,10 +58,10 @@ public class Entity {
 			for (String s : identifiers) {
 				DataManager registered = m_world.getRegisteredManager(s);
 				m_data.get(s).manager = registered;
-				registered.checkRegister(this);
+				// registered.checkRegister(this);
 			}
 		}
-	}*/
+	}
 
 	public void addComponent(Component comp) {
 		Set<String> identifiers = comp.getDataIdentifiers();
@@ -71,16 +71,18 @@ public class Entity {
 
 				m_data.put(initializer, new ManagedData(new Data(m_world.getRegisteredInitializer(initializer)
 						.createObjectFor(initializer)), registered));
-				registered.checkRegister(this);
+				// registered.checkRegister(this);
 			}
 		}
 
 		comp.setEntity(this);
+		comp.setWorld(m_world);
 		m_components.add(comp);
 	}
 
 	public void removeComponent(Component comp) {
 		comp.setEntity(null);
+		comp.setWorld(null);
 		m_components.remove(comp);
 	}
 
