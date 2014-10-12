@@ -93,6 +93,7 @@ public class World {
 	public void removeEntity(Entity e) {
 		e.setWorld(null);
 		m_entities.remove(e);
+		m_groupManager.removeEntity(e);
 		Collections.sort(m_entities, s_updateComparator);
 	}
 

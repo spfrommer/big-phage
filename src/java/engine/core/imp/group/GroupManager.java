@@ -21,7 +21,16 @@ public class GroupManager extends DataManager {
 	}
 
 	public List<Entity> getEntities(String group) {
+		if (!m_groupMap.containsKey(group))
+			m_groupMap.put(group, new ArrayList<Entity>());
 		return m_groupMap.get(group);
+	}
+
+	public void removeEntity(Entity entity) {
+		for (List<Entity> entities : m_groupMap.values()) {
+			if (entities.contains(entity))
+				entities.remove(entity);
+		}
 	}
 
 	@Override
