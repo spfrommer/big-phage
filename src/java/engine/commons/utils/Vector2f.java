@@ -26,6 +26,18 @@ public class Vector2f {
 		this.y = v.y;
 	}
 
+	public Vector2f add(Vector2f vec) {
+		return new Vector2f(x + vec.x, y + vec.y);
+	}
+
+	public Vector2f sub(Vector2f vec) {
+		return new Vector2f(x - vec.x, y - vec.y);
+	}
+
+	public Vector2f mul(float f) {
+		return new Vector2f(x * f, y * f);
+	}
+
 	@Override
 	public String toString() {
 		return "[" + x + ", " + y + "]";

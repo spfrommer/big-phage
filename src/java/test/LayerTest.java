@@ -8,6 +8,7 @@ import engine.commons.utils.Vector2f;
 import engine.core.exec.MaterialPool;
 import engine.core.exec.SimplePhysicsGame;
 import engine.core.frame.Entity;
+import engine.core.imp.physics.collision.NoCollisionFilter;
 import engine.core.imp.render.LightComponent;
 import engine.core.imp.render.MaterialFactory;
 import engine.core.presets.PhysicsGameFactory;
@@ -37,6 +38,7 @@ public class LayerTest extends SimplePhysicsGame {
 		// make the background
 		Entity background = factory.createTexturedSolid(new Vector2f(0f, 0f), 0f, new Vector2f(8f, 8f),
 				BodyType.STATIC, MaterialPool.materials.get("grassbackground"));
+		this.getPhysicsManager().getCollisionFilter().addFilter(background, new NoCollisionFilter());
 		background.setUpdateOrder(2);
 		background.setData("sys_repeatMaterial", true);
 		background.setData("sys_repeatCount", 2f);

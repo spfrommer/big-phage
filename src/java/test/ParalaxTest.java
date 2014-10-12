@@ -8,6 +8,7 @@ import engine.commons.utils.Vector2f;
 import engine.core.exec.MaterialPool;
 import engine.core.exec.SimplePhysicsGame;
 import engine.core.frame.Entity;
+import engine.core.imp.physics.collision.NoCollisionFilter;
 import engine.core.imp.render.LightComponent;
 import engine.core.imp.render.MaterialFactory;
 import engine.core.imp.render.ParalaxRenderComponent;
@@ -27,9 +28,9 @@ public class ParalaxTest extends SimplePhysicsGame {
 	@Override
 	public void createMaterials() {
 		MaterialPool.materials.put("starbackground1",
-				MaterialFactory.createBasicMaterial("Textures/starbackground1.jpg"));
+				MaterialFactory.createBasicMaterial("Textures/starbackground1.png", false, true));
 		MaterialPool.materials.put("starbackground2",
-				MaterialFactory.createBasicMaterial("Textures/starbackground2.png"));
+				MaterialFactory.createBasicMaterial("Textures/starbackground2.png", false, true));
 	}
 
 	// LAYER 0 IS RESERVED FOR THE CAMERA, 1 FOR LIGHTS, 2 IS USUALLY
@@ -43,13 +44,19 @@ public class ParalaxTest extends SimplePhysicsGame {
 		Entity stars1 = factory.createTexturedSolid(new Vector2f(0f, 0f), 0f, new Vector2f(15f, 15f), BodyType.STATIC,
 				MaterialPool.materials.get("starbackground1"), new ParalaxRenderComponent());
 		stars1.setUpdateOrder(2);
+		this.getPhysicsManager().getCollisionFilter().addFilter(stars1, new NoCollisionFilter());
+		// stars1.setData("sys_repeatMaterial", true);
+		stars1.setData("sys_repeatCount", 10f);
 		stars1.setData("sys_paralaxDepth", 0f);
 		getWorld().addEntity(stars1);
 
 		// make the wall
 		Entity stars2 = factory.createTexturedSolid(new Vector2f(1.75f, 1.5f), 0f, new Vector2f(15f, 15f),
 				BodyType.STATIC, MaterialPool.materials.get("starbackground2"), new ParalaxRenderComponent());
-		stars2.setUpdateOrder(3);
+		stars2.setUpdateOrder(2);
+		this.getPhysicsManager().getCollisionFilter().addFilter(stars2, new NoCollisionFilter());
+		stars2.setData("sys_repeatMaterial", true);
+		stars2.setData("sys_repeatCount", 10f);
 		stars2.setData("sys_paralaxDepth", 2f);
 		getWorld().addEntity(stars2);
 

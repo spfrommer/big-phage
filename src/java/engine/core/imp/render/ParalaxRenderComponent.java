@@ -24,21 +24,21 @@ public class ParalaxRenderComponent extends Component {
 		Vector2f dimensions = (Vector2f) getData("sys_dimensions");
 		float rotation = (Float) getData("sys_rotation");
 		Material mat = (Material) getData("sys_material");
-		float layer = (Float) getData("sys_paralaxDepth") + 1;
+		float depth = (Float) getData("sys_paralaxDepth") + 1;
 		boolean repeat = (Boolean) getData("sys_repeatMaterial");
 		float repeatCount = (Float) getData("sys_repeatCount");
 		Renderer2D renderer = state.renderer;
 
 		float camX = renderer.getViewTranslation().x;
 		float camY = renderer.getViewTranslation().y;
-		float transX = layer * camX * 0.1f;
-		float transY = layer * camY * 0.1f;
+		float transX = depth * camX * 0.1f;
+		float transY = depth * camY * 0.1f;
 
 		renderer.setMaterial(mat);
 		renderer.pushModel();
-		renderer.scale(layer, layer);
 		renderer.translate(transX, transY);
 		renderer.translate(position.x, position.y);
+		renderer.scale(depth, depth);
 		renderer.rotate(rotation);
 		if (repeat) {
 			renderer.fillRect(-(dimensions.x * repeatCount) / 2, -(dimensions.y * repeatCount) / 2, dimensions.x

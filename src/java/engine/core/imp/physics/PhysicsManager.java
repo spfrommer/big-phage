@@ -31,11 +31,18 @@ public class PhysicsManager extends DataManager {
 			"sys_position", "sys_rotation", "sys_liquid"));
 	private Map<Entity, Body> m_bodies = new HashMap<Entity, Body>();
 	private Map<Entity, Liquid> m_liquids = new HashMap<Entity, Liquid>();
-	private World m_world = new World(new Vec2(0, -10));
+	private World m_world;
 	private ManagerFilter m_collisionFilter = new ManagerFilter();
 	private ManagerHandler m_collisionHandler = new ManagerHandler();
 
 	public PhysicsManager() {
+		m_world = new World(new Vec2(0, -10));
+		m_world.setContactFilter(m_collisionFilter);
+		m_world.setContactListener(m_collisionHandler);
+	}
+
+	public PhysicsManager(Vector2f gravity) {
+		m_world = new World(new Vec2(gravity.x, gravity.y));
 		m_world.setContactFilter(m_collisionFilter);
 		m_world.setContactListener(m_collisionHandler);
 	}
@@ -74,9 +81,11 @@ public class PhysicsManager extends DataManager {
 	}
 
 	/**
-	 * Will make a Body not associated with an Entity (it will not receive collision events). In order to do this,
-	 * either use createSolid() or set the Body's user data to be the Entity that should be associated with the Event;
-	 * also add the Event that should be triggered to the CollisionHandler.
+	 * Will make a Body not associated with an Entity (it will not receive
+	 * collision events). In order to do this, either use createSolid() or set
+	 * the Body's user data to be the Entity that should be associated with the
+	 * Event; also add the Event that should be triggered to the
+	 * CollisionHandler.
 	 * 
 	 * @param bodyDef
 	 * @return a Body
