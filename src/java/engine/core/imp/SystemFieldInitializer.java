@@ -51,8 +51,9 @@ public class SystemFieldInitializer implements FieldInitializer {
 			return 1f / 60f;
 		if (identifier.equals("sys_repeatAnimation"))
 			return false;
-		if (identifier.equals("sys_groups"))
+		if (identifier.equals("sys_groups")) {
 			return new TagList();
+		}
 		if (identifier.equals("sys_camPosition"))
 			return new Vector2f(0f, 0f);
 		if (identifier.equals("sys_camScale"))

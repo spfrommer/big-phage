@@ -118,7 +118,8 @@ public class World {
 	}
 
 	private void updateEntities(float time, GameState state) {
-		for (Entity e : m_entities) {
+		for (int i = 0; i < m_entities.size(); i++) {
+			Entity e = m_entities.get(i);
 			e.updateData(time);
 			e.updateComponents(time, state);
 		}
