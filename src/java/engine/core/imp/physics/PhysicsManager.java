@@ -29,6 +29,7 @@ import engine.core.imp.physics.liquid.PhysicsConstants;
 public class PhysicsManager extends DataManager {
 	private static final Set<String> IDENTIFIERS = new HashSet<String>(Arrays.asList("sys_type", "sys_body",
 			"sys_position", "sys_rotation", "sys_liquid"));
+	private List<Body> m_toBeRemoved = new ArrayList<Body>();
 	private Map<Entity, Body> m_bodies = new HashMap<Entity, Body>();
 	private Map<Entity, Liquid> m_liquids = new HashMap<Entity, Liquid>();
 	private World m_world;
@@ -100,7 +101,19 @@ public class PhysicsManager extends DataManager {
 	 * @param body
 	 */
 	public void destroyBody(Body body) {
-		m_world.destroyBody(body);
+		m_toBeRemoved.add(body);
+		// m_world.destroyBody(body);
+	}
+
+	/**
+	 * Destroys a Body.
+	 * 
+	 * @param entity
+	 * @param body
+	 */
+	public void destroyBody(Entity entity) {
+		m_bodies.remove(entity);
+		destroyBody((Body) entity.getData("sys_body"));
 	}
 
 	/**
@@ -177,8 +190,11 @@ public class PhysicsManager extends DataManager {
 		for (Liquid liquid : m_liquids.values()) {
 			liquid.applyForces(time, this);
 		}
-
 		m_world.step(time, 20, 20);
+		for (Body b : m_toBeRemoved) {
+			m_world.destroyBody(b);
+		}
+		m_toBeRemoved.clear();
 	}
 
 	@Override

@@ -38,6 +38,10 @@ public class Vector2f {
 		return new Vector2f(x * f, y * f);
 	}
 
+	public float length() {
+		return (float) Math.sqrt(x * x + y * y);
+	}
+
 	public float angle() {
 		return (float) Math.atan2(y, x);
 	}
