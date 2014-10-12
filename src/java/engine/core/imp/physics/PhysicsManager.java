@@ -220,11 +220,12 @@ public class PhysicsManager extends DataManager {
 	public void setData(Entity entity, String identifier, Object data) {
 		Body body = m_bodies.get(entity);
 		if (identifier.equals("sys_position")) {
-			body.m_xf.p.set(((Vector2f) data).x, ((Vector2f) data).y);
+			// body.m_xf.p.set(((Vector2f) data).x, ((Vector2f) data).y);
+			body.setTransform(new Vec2(((Vector2f) data).x, ((Vector2f) data).y), body.getAngle());
 			updateData(entity, identifier);
 		}
 		if (identifier.equals("sys_rotation")) {
-			body.m_xf.q.set((Float) data);
+			body.setTransform(body.getTransform().p, (Float) data);
 			updateData(entity, identifier);
 		}
 	}
