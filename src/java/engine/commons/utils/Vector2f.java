@@ -38,6 +38,10 @@ public class Vector2f {
 		return new Vector2f(x * f, y * f);
 	}
 
+	public float angle() {
+		return (float) Math.atan2(y, x);
+	}
+
 	@Override
 	public String toString() {
 		return "[" + x + ", " + y + "]";

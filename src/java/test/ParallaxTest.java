@@ -11,17 +11,17 @@ import engine.core.frame.Entity;
 import engine.core.imp.physics.collision.NoCollisionFilter;
 import engine.core.imp.render.LightComponent;
 import engine.core.imp.render.MaterialFactory;
-import engine.core.imp.render.ParalaxRenderComponent;
+import engine.core.imp.render.ParallaxRenderComponent;
 import engine.core.imp.render.StationaryCameraControllerComponent;
 import engine.core.presets.PhysicsGameFactory;
 import glextra.renderer.Light.PointLight;
 import gltools.texture.Color;
 import gltools.vector.Vector3f;
 
-public class ParalaxTest extends SimplePhysicsGame {
+public class ParallaxTest extends SimplePhysicsGame {
 	private Entity m_camera;
 
-	public ParalaxTest() {
+	public ParallaxTest() {
 		super("Paralax Test");
 	}
 
@@ -31,6 +31,8 @@ public class ParalaxTest extends SimplePhysicsGame {
 				MaterialFactory.createBasicMaterial("Textures/starbackground1.png", false, true));
 		MaterialPool.materials.put("starbackground2",
 				MaterialFactory.createBasicMaterial("Textures/starbackground2.png", false, true));
+		MaterialPool.materials.put("starbackground3",
+				MaterialFactory.createBasicMaterial("Textures/starbackground3.png", false, true));
 	}
 
 	// LAYER 0 IS RESERVED FOR THE CAMERA, 1 FOR LIGHTS, 2 IS USUALLY
@@ -42,22 +44,22 @@ public class ParalaxTest extends SimplePhysicsGame {
 
 		// make the background
 		Entity stars1 = factory.createTexturedSolid(new Vector2f(0f, 0f), 0f, new Vector2f(15f, 15f), BodyType.STATIC,
-				MaterialPool.materials.get("starbackground1"), new ParalaxRenderComponent());
+				MaterialPool.materials.get("starbackground3"), new ParallaxRenderComponent());
 		stars1.setUpdateOrder(2);
 		this.getPhysicsManager().getCollisionFilter().addFilter(stars1, new NoCollisionFilter());
-		// stars1.setData("sys_repeatMaterial", true);
+		stars1.setData("sys_repeatMaterial", true);
 		stars1.setData("sys_repeatCount", 10f);
-		stars1.setData("sys_paralaxDepth", 0f);
+		stars1.setData("sys_parallaxDepth", 5f);
 		getWorld().addEntity(stars1);
 
 		// make the wall
 		Entity stars2 = factory.createTexturedSolid(new Vector2f(1.75f, 1.5f), 0f, new Vector2f(15f, 15f),
-				BodyType.STATIC, MaterialPool.materials.get("starbackground2"), new ParalaxRenderComponent());
+				BodyType.STATIC, MaterialPool.materials.get("starbackground3"), new ParallaxRenderComponent());
 		stars2.setUpdateOrder(2);
 		this.getPhysicsManager().getCollisionFilter().addFilter(stars2, new NoCollisionFilter());
 		stars2.setData("sys_repeatMaterial", true);
 		stars2.setData("sys_repeatCount", 10f);
-		stars2.setData("sys_paralaxDepth", 2f);
+		stars2.setData("sys_parallaxDepth", 1f);
 		getWorld().addEntity(stars2);
 
 		// add the light
@@ -92,7 +94,7 @@ public class ParalaxTest extends SimplePhysicsGame {
 	}
 
 	public static void main(String[] args) {
-		ParalaxTest test = new ParalaxTest();
+		ParallaxTest test = new ParallaxTest();
 		test.start();
 	}
 }

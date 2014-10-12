@@ -13,7 +13,6 @@ import gltools.input.Mouse;
 public abstract class Game {
 	private World m_current;
 
-	private Display m_display;
 	private GameState m_state = new GameState();
 
 	private String m_title;
@@ -25,17 +24,17 @@ public abstract class Game {
 	}
 
 	public void start() {
-		m_display = makeDisplay(m_title);
+		m_state.display = makeDisplay(m_title);
 		m_state.renderer = LWJGLRenderer2D.getInstance();
-		m_state.renderer.init(m_display.getWidth(), m_display.getHeight(), -8.5f, 8.5f, 5f, -5f);
-		readDevices(m_display, m_state);
+		m_state.renderer.init(m_state.display.getWidth(), m_state.display.getHeight(), -8.5f, 8.5f, 5f, -5f);
+		readDevices(m_state.display, m_state);
 
 		PointLight.init();
 		init();
 		createMaterials();
 		onStart();
 
-		while (!m_state.keyboard.isKeyPressed(m_state.keyboard.getKey("ESCAPE")) && !m_display.closeRequested()) {
+		while (!m_state.keyboard.isKeyPressed(m_state.keyboard.getKey("ESCAPE")) && !m_state.display.closeRequested()) {
 			m_state.keyboard.poll();
 			m_state.mouse.poll();
 			m_state.renderer.clear();
@@ -49,8 +48,10 @@ public abstract class Game {
 			m_state.renderer.finishGeometry();
 			m_state.renderer.finishLighted();
 			m_state.renderer.doLightingComputations();
-			m_display.update(m_fps);
+			m_state.display.update(m_fps);
 		}
+		m_state.display.destroy();
+		System.exit(0);
 	}
 
 	protected abstract void init();
@@ -80,7 +81,7 @@ public abstract class Game {
 	}
 
 	private Display makeDisplay(String title) {
-		LWJGLDisplay display = new LWJGLDisplay(1200, 700, true);
+		LWJGLDisplay display = new LWJGLDisplay(800, 500, true);
 		display.setTitle(title);
 		display.init();
 		return display;
