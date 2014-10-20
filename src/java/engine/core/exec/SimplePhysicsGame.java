@@ -13,7 +13,7 @@ public abstract class SimplePhysicsGame extends Game {
 	private PhysicsGameFactory m_factory;
 
 	public SimplePhysicsGame(String title) {
-		super(title);
+		super(title, 1024, 1024, 102.4f);
 		m_world = new World();
 		m_physics = new PhysicsManager();
 	}

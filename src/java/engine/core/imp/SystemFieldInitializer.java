@@ -12,10 +12,10 @@ import engine.core.frame.FieldInitializer;
 import engine.core.imp.group.TagList;
 import engine.core.imp.physics.liquid.Liquid;
 import engine.core.imp.render.MaterialFactory;
+import glcommon.Color;
+import glcommon.vector.Vector3f;
 import glextra.material.Material;
 import glextra.renderer.Light.PointLight;
-import gltools.texture.Color;
-import gltools.vector.Vector3f;
 
 public class SystemFieldInitializer implements FieldInitializer {
 	private static final Set<String> IDENTIFIERS = new HashSet<String>(Arrays.asList("sys_position", "sys_rotation",
@@ -23,10 +23,12 @@ public class SystemFieldInitializer implements FieldInitializer {
 			"sys_frames", "sys_timePerFrame", "sys_repeatAnimation", "sys_groups", "sys_camPosition", "sys_camScale",
 			"sys_camRotation", "sys_camTargetEntity", "sys_parallaxDepth", "sys_repeatMaterial", "sys_repeatCount"));
 
+	@Override
 	public Set<String> getDataIdentifiers() {
 		return IDENTIFIERS;
 	}
 
+	@Override
 	public Object createObjectFor(String identifier) {
 		if (identifier.equals("sys_position"))
 			return new Vector2f(0, 0);
@@ -63,7 +65,7 @@ public class SystemFieldInitializer implements FieldInitializer {
 		if (identifier.equals("sys_camTargetEntity"))
 			return null;
 		if (identifier.equals("sys_paralaxDepth"))
-			return 0f;
+			return 1f;
 		if (identifier.equals("sys_repeatMaterial"))
 			return false;
 		if (identifier.equals("sys_repeatCount"))

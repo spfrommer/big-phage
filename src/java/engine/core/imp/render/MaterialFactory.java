@@ -1,5 +1,6 @@
 package engine.core.imp.render;
 
+import glcommon.Color;
 import glextra.material.GlobalParams;
 import glextra.material.Material;
 import glextra.material.MaterialXMLLoader;
@@ -7,7 +8,6 @@ import gltools.ResourceLocator;
 import gltools.ResourceLocator.ClasspathResourceLocator;
 import gltools.shader.Program.ProgramLinkException;
 import gltools.shader.Shader.ShaderCompileException;
-import gltools.texture.Color;
 import gltools.texture.Texture2D;
 import gltools.texture.TextureFactory;
 import gltools.texture.TextureWrapMode;
@@ -97,6 +97,8 @@ public class MaterialFactory {
 
 	/**
 	 * @param texture
+	 * @param lighted
+	 * @param repeated
 	 * @return a textured Material
 	 */
 	public static Material createBasicMaterial(String texture, boolean lighted, boolean repeated) {

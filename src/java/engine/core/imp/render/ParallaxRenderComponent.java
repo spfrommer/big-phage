@@ -31,14 +31,13 @@ public class ParallaxRenderComponent extends Component {
 
 		float camX = renderer.getViewTranslation().x;
 		float camY = renderer.getViewTranslation().y;
-		float transX = 1 / depth * camX;
-		float transY = 1 / depth * camY;
-
+		float transX = (position.x + camX) / depth;
+		float transY = (position.y + camY) / depth;
+		// System.out.println(position);
 		renderer.setMaterial(mat);
 		renderer.pushModel();
 		renderer.translate(transX, transY);
-		renderer.translate(position.x, position.y);
-		renderer.scale(1 / depth, 1 / depth);
+		renderer.scale(1f / depth, 1f / depth);
 		renderer.rotate(rotation);
 		if (repeat) {
 			renderer.fillRect(-(dimensions.x * repeatCount) / 2, -(dimensions.y * repeatCount) / 2, dimensions.x

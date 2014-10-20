@@ -18,15 +18,25 @@ public abstract class Game {
 	private String m_title;
 	private int m_fps;
 
-	public Game(String title) {
+	private int m_displayWidth;
+	private int m_displayHeight;
+	private float m_pixelsPerMeter;
+
+	public Game(String title, int displayWidth, int displayHeight, float pixelsPerMeter) {
 		m_title = title;
 		m_fps = 60;
+		m_displayWidth = displayWidth;
+		m_displayHeight = displayHeight;
+		m_pixelsPerMeter = pixelsPerMeter;
 	}
 
 	public void start() {
 		m_state.display = makeDisplay(m_title);
 		m_state.renderer = LWJGLRenderer2D.getInstance();
-		m_state.renderer.init(m_state.display.getWidth(), m_state.display.getHeight(), -8.5f, 8.5f, 5f, -5f);
+		float widthMeters = m_displayWidth / (m_pixelsPerMeter * 2);
+		float heightMeters = m_displayHeight / (m_pixelsPerMeter * 2);
+		m_state.renderer.init(m_state.display.getWidth(), m_state.display.getHeight(), -widthMeters, widthMeters,
+				heightMeters, -heightMeters);
 		readDevices(m_state.display, m_state);
 
 		PointLight.init();
@@ -81,7 +91,7 @@ public abstract class Game {
 	}
 
 	private Display makeDisplay(String title) {
-		LWJGLDisplay display = new LWJGLDisplay(800, 500, true);
+		LWJGLDisplay display = new LWJGLDisplay(m_displayWidth, m_displayHeight, true);
 		display.setTitle(title);
 		display.init();
 		return display;

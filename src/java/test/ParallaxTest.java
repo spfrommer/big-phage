@@ -14,9 +14,9 @@ import engine.core.imp.render.MaterialFactory;
 import engine.core.imp.render.ParallaxRenderComponent;
 import engine.core.imp.render.StationaryCameraControllerComponent;
 import engine.core.presets.PhysicsGameFactory;
+import glcommon.Color;
+import glcommon.vector.Vector3f;
 import glextra.renderer.Light.PointLight;
-import gltools.texture.Color;
-import gltools.vector.Vector3f;
 
 public class ParallaxTest extends SimplePhysicsGame {
 	private Entity m_camera;

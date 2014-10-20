@@ -48,6 +48,10 @@ public class PhysicsManager extends DataManager {
 		m_world.setContactListener(m_collisionHandler);
 	}
 
+	public void setGravity(Vector2f gravity) {
+		m_world.setGravity(new Vec2(gravity.x, gravity.y));
+	}
+
 	/**
 	 * @return the collision filter
 	 */
@@ -82,11 +86,9 @@ public class PhysicsManager extends DataManager {
 	}
 
 	/**
-	 * Will make a Body not associated with an Entity (it will not receive
-	 * collision events). In order to do this, either use createSolid() or set
-	 * the Body's user data to be the Entity that should be associated with the
-	 * Event; also add the Event that should be triggered to the
-	 * CollisionHandler.
+	 * Will make a Body not associated with an Entity (it will not receive collision events). In order to do this,
+	 * either use createSolid() or set the Body's user data to be the Entity that should be associated with the Event;
+	 * also add the Event that should be triggered to the CollisionHandler.
 	 * 
 	 * @param bodyDef
 	 * @return a Body

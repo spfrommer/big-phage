@@ -14,13 +14,13 @@ import engine.core.imp.physics.collision.InclusiveGroupFilter;
 import engine.core.imp.render.LightComponent;
 import engine.core.imp.render.MaterialFactory;
 import engine.core.presets.PhysicsGameFactory;
+import glcommon.Color;
+import glcommon.vector.Vector3f;
 import glextra.renderer.Light.PointLight;
-import gltools.texture.Color;
-import gltools.vector.Vector3f;
 
-public class CollisionTest extends SimplePhysicsGame {
+public class CollisionFilterTest extends SimplePhysicsGame {
 
-	public CollisionTest() {
+	public CollisionFilterTest() {
 		super("Collision Test");
 	}
 
@@ -73,7 +73,7 @@ public class CollisionTest extends SimplePhysicsGame {
 	}
 
 	public static void main(String[] args) {
-		CollisionTest test = new CollisionTest();
+		CollisionFilterTest test = new CollisionFilterTest();
 		test.start();
 	}
 }

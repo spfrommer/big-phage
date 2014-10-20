@@ -16,13 +16,13 @@ import engine.core.imp.render.LightComponent;
 import engine.core.imp.render.LiquidRenderComponent;
 import engine.core.imp.render.MaterialFactory;
 import engine.core.presets.PhysicsGameFactory;
+import glcommon.Color;
+import glcommon.vector.Vector3f;
 import glextra.material.Material;
 import glextra.renderer.Light.PointLight;
 import gltools.input.Key;
 import gltools.input.KeyListener;
 import gltools.input.Keyboard;
-import gltools.texture.Color;
-import gltools.vector.Vector3f;
 
 public class LiquidTest extends SimplePhysicsGame {
 	public LiquidTest() {
@@ -84,6 +84,7 @@ public class LiquidTest extends SimplePhysicsGame {
 		getWorld().addEntity(light);
 
 		getGameState().keyboard.addListener(new KeyListener() {
+			@Override
 			public void keyPressed(Keyboard k, Key key) {
 				Material material = MaterialPool.materials.get("metalplate");
 				Entity box = getGameFactory().createTexturedSolid(
@@ -92,6 +93,7 @@ public class LiquidTest extends SimplePhysicsGame {
 				getWorld().addEntity(box);
 			}
 
+			@Override
 			public void keyReleased(Keyboard k, Key key) {
 
 			}

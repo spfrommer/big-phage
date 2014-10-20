@@ -12,9 +12,9 @@ import engine.core.imp.physics.collision.NoCollisionFilter;
 import engine.core.imp.render.LightComponent;
 import engine.core.imp.render.MaterialFactory;
 import engine.core.presets.PhysicsGameFactory;
+import glcommon.Color;
+import glcommon.vector.Vector3f;
 import glextra.renderer.Light.PointLight;
-import gltools.texture.Color;
-import gltools.vector.Vector3f;
 
 public class LayerTest extends SimplePhysicsGame {
 	public LayerTest() {
