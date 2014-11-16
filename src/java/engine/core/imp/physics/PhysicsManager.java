@@ -78,6 +78,7 @@ public class PhysicsManager extends DataManager {
 		}
 
 		Body body = m_world.createBody(bodyDef);
+		body.resetMassData();
 		body.setUserData(entity);
 		m_bodies.put(entity, body);
 

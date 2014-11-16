@@ -14,6 +14,7 @@ import engine.core.frame.Entity;
 
 public class ManagerHandler implements ContactListener {
 	private Map<Entity, List<CollisionEvent>> m_events = new HashMap<Entity, List<CollisionEvent>>();
+	private List<CompleteListener> m_listeners = new ArrayList<CompleteListener>();
 
 	public void addEvent(Entity entity, CollisionEvent event) {
 		if (!m_events.containsKey(entity)) {
@@ -26,9 +27,18 @@ public class ManagerHandler implements ContactListener {
 		m_events.get(entity).remove(event);
 	}
 
-	public void beginContact(Contact arg0) {
-		Entity entity1 = (Entity) arg0.getFixtureA().getBody().getUserData();
-		Entity entity2 = (Entity) arg0.getFixtureB().getBody().getUserData();
+	public void addCompleteListener(CompleteListener listener) {
+		m_listeners.add(listener);
+	}
+
+	public void removeCompleteListener(CompleteListener listener) {
+		m_listeners.remove(listener);
+	}
+
+	@Override
+	public void beginContact(Contact contact) {
+		Entity entity1 = (Entity) contact.getFixtureA().getBody().getUserData();
+		Entity entity2 = (Entity) contact.getFixtureB().getBody().getUserData();
 
 		if (entity1 != null && m_events.containsKey(entity1)) {
 			for (CollisionEvent e : m_events.get(entity1))
@@ -38,17 +48,26 @@ public class ManagerHandler implements ContactListener {
 			for (CollisionEvent e : m_events.get(entity2))
 				e.collidedWith(entity1);
 		}
+
+		for (CompleteListener listener : m_listeners)
+			listener.beginContact(contact);
 	}
 
-	public void endContact(Contact arg0) {
-
+	@Override
+	public void endContact(Contact contact) {
+		for (CompleteListener listener : m_listeners)
+			listener.endContact(contact);
 	}
 
-	public void postSolve(Contact arg0, ContactImpulse arg1) {
-
+	@Override
+	public void postSolve(Contact contact, ContactImpulse impulse) {
+		for (CompleteListener listener : m_listeners)
+			listener.postSolve(contact, impulse);
 	}
 
-	public void preSolve(Contact arg0, Manifold arg1) {
-
+	@Override
+	public void preSolve(Contact contact, Manifold oldManifold) {
+		for (CompleteListener listener : m_listeners)
+			listener.preSolve(contact, oldManifold);
 	}
 }

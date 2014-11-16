@@ -9,8 +9,8 @@ import java.util.Set;
 import engine.core.exec.GameState;
 
 /**
- * An entity in the world. Data will automatically be assigned the default world
- * manager, unless otherwise specified with setDataManager(identifer, manager).
+ * An entity in the world. Data will automatically be assigned the default world manager, unless otherwise specified
+ * with setDataManager(identifer, manager).
  */
 public class Entity {
 	private World m_world;
@@ -144,6 +144,12 @@ public class Entity {
 			m_data.put(identifier, new ManagedData(new Data(data), m_world.getRegisteredManager(identifier)));
 		} else {
 			m_data.get(identifier).data.data = data;
+		}
+	}
+
+	public void dumpData() {
+		for (String s : m_data.keySet()) {
+			System.out.println(s + " : " + m_data.get(s).data.data);
 		}
 	}
 
