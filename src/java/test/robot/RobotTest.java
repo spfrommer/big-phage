@@ -74,7 +74,7 @@ public class RobotTest extends SimplePhysicsGame {
 		Joint joint2 = this.getPhysicsManager().createJoint(legJoint2);
 
 		JointDef bodyJoint = PhysicsFactory.makeWeldDef((Body) connector.getData("sys_body"),
-				(Body) body.getData("sys_body"), new Vector2f(0f, 0f), new Vector2f(0f, -0.4f), false, (float) 0);
+				(Body) body.getData("sys_body"), new Vector2f(0f, 0f), new Vector2f(0f, -0.4f), false, 0.01f);
 		Joint joint3 = this.getPhysicsManager().createJoint(bodyJoint);
 
 		// create the controller

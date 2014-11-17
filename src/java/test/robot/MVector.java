@@ -5,7 +5,7 @@ package test.robot;
  */
 public class MVector extends Matrix {
 	public MVector(float x, float y) {
-		super(3, 1, new float[] { x, y, 1 });
+		super(2, 1, new float[] { x, y });
 	}
 
 	/**

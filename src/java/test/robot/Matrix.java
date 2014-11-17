@@ -27,7 +27,7 @@ public class Matrix {
 	 * @return the Matrix cast to a Vector3d
 	 */
 	public MVector toVector() {
-		if (m_rows == 3 && m_columns == 1) {
+		if (m_rows == 2 && m_columns == 1) {
 			return new MVector(getVal(0, 0), getVal(1, 0));
 		} else {
 			throw new DimensionException();
