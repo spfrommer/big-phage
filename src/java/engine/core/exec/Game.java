@@ -22,6 +22,8 @@ public abstract class Game {
 	private int m_displayHeight;
 	private float m_pixelsPerMeter;
 
+	private boolean m_autoStep = true;
+
 	public Game(String title, int displayWidth, int displayHeight, float pixelsPerMeter) {
 		m_title = title;
 		m_fps = 60;
@@ -44,22 +46,32 @@ public abstract class Game {
 		createMaterials();
 		onStart();
 
-		while (!m_state.keyboard.isKeyPressed(m_state.keyboard.getKey("ESCAPE")) && !m_state.display.closeRequested()) {
-			m_state.keyboard.poll();
-			m_state.mouse.poll();
-			m_state.renderer.clear();
-			m_state.renderer.startLighted();
-			m_state.renderer.startGeometry();
-
-			preUpdate();
-			m_current.update(1 / (float) m_fps, m_state);
-			postUpdate();
-
-			m_state.renderer.finishGeometry();
-			m_state.renderer.finishLighted();
-			m_state.renderer.doLightingComputations();
-			m_state.display.update(m_fps);
+		if (m_autoStep) {
+			while (!m_state.keyboard.isKeyPressed(m_state.keyboard.getKey("ESCAPE"))
+					&& !m_state.display.closeRequested()) {
+				doStep();
+			}
 		}
+	}
+
+	public void doStep() {
+		m_state.keyboard.poll();
+		m_state.mouse.poll();
+		m_state.renderer.clear();
+		m_state.renderer.startLighted();
+		m_state.renderer.startGeometry();
+
+		preUpdate();
+		m_current.update(1 / (float) m_fps, m_state);
+		postUpdate();
+
+		m_state.renderer.finishGeometry();
+		m_state.renderer.finishLighted();
+		m_state.renderer.doLightingComputations();
+		m_state.display.update(m_fps);
+	}
+
+	public void close() {
 		m_state.display.destroy();
 		System.exit(0);
 	}
@@ -88,6 +100,16 @@ public abstract class Game {
 
 	public void setFPS(int fps) {
 		m_fps = fps;
+	}
+
+	/**
+	 * Sets whether or not the simulation should automatically update itself or whether updates are done manually with
+	 * the doStep() call.
+	 * 
+	 * @param autoStep
+	 */
+	public void setAutoStep(boolean autoStep) {
+		m_autoStep = autoStep;
 	}
 
 	private Display makeDisplay(String title) {

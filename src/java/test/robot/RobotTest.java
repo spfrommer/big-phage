@@ -1,12 +1,18 @@
 package test.robot;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Arrays;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
 
 import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.BodyType;
+import org.jbox2d.dynamics.joints.Joint;
 import org.jbox2d.dynamics.joints.JointDef;
 import org.jbox2d.dynamics.joints.RevoluteJoint;
-import org.jbox2d.dynamics.joints.WeldJoint;
+import org.lwjgl.LWJGLException;
 
 import engine.commons.utils.Vector2f;
 import engine.core.exec.MaterialPool;
@@ -26,6 +32,30 @@ import glextra.renderer.Light.PointLight;
 public class RobotTest extends SimplePhysicsGame {
 	public RobotTest() {
 		super("Robot test");
+		this.setAutoStep(false);
+
+		makeStepGui();
+	}
+
+	private void makeStepGui() {
+		JFrame frame = new JFrame("Controller");
+		JButton button = new JButton("Step");
+		button.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					org.lwjgl.opengl.Display.makeCurrent();
+				} catch (LWJGLException e1) {
+					e1.printStackTrace();
+				}
+				for (int i = 0; i < 5; i++)
+					doStep();
+			}
+		});
+		frame.setLocation(0, 0);
+		frame.add(button);
+		frame.setSize(300, 100);
+		frame.setVisible(true);
 	}
 
 	@Override
@@ -59,11 +89,12 @@ public class RobotTest extends SimplePhysicsGame {
 		filter.addFilter(connector, new ExclusiveGroupFilter(new TagList("robot")));
 		this.getWorld().addEntity(connector);
 
-		Entity body = factory.createTexturedSolid(new Vector2f(0f, 1.4f), 0, new Vector2f(0.1f, 0.8f),
+		Entity head = factory.createTexturedSolid(new Vector2f(0f, 1.4f), 0, new Vector2f(0.1f, 0.4f),
 				BodyType.DYNAMIC, MaterialPool.materials.get("metalplate"));
-		body.setData("sys_groups", new TagList("robot"));
-		filter.addFilter(body, new ExclusiveGroupFilter(new TagList("robot")));
-		this.getWorld().addEntity(body);
+		head.setData("sys_groups", new TagList("robot"));
+		head.addComponent(new KeyboardRotateComponent());
+		filter.addFilter(head, new ExclusiveGroupFilter(new TagList("robot")));
+		this.getWorld().addEntity(head);
 
 		// create the joints
 		JointDef legJoint1 = PhysicsFactory.makeRevoluteDef((Body) leg1.getData("sys_body"),
@@ -76,12 +107,12 @@ public class RobotTest extends SimplePhysicsGame {
 		RevoluteJoint joint2 = (RevoluteJoint) this.getPhysicsManager().createJoint(legJoint2);
 		joint2.enableMotor(true);
 
-		JointDef bodyJoint = PhysicsFactory.makeWeldDef((Body) connector.getData("sys_body"),
-				(Body) body.getData("sys_body"), new Vector2f(0f, 0f), new Vector2f(0f, -0.4f), false, 0.4f);
-		WeldJoint joint3 = (WeldJoint) this.getPhysicsManager().createJoint(bodyJoint);
+		JointDef bodyJoint = PhysicsFactory.makeRevoluteDef((Body) connector.getData("sys_body"),
+				(Body) head.getData("sys_body"), new Vector2f(0f, 0f), new Vector2f(0f, -0.2f), false, -0f);
+		Joint joint3 = this.getPhysicsManager().createJoint(bodyJoint);
 
 		// create the controller
-		RobotController controller = new RobotController(this.getWorld(), leg1, leg2, connector, body, joint1, joint2,
+		RobotController controller = new RobotController(this.getWorld(), leg1, leg2, connector, head, joint1, joint2,
 				joint3);
 		this.getPhysicsManager().getCollisionHandler().addCompleteListener(controller.getControllerComponent());
 		this.getWorld().addEntity(controller);
@@ -97,6 +128,12 @@ public class RobotTest extends SimplePhysicsGame {
 				new Color(1f, 1f, 1f), new Color(0.1f, 0.1f, 0.1f, 0.1f))));
 		light.addComponent(new LightComponent());
 		getWorld().addEntity(light);
+
+		try {
+			org.lwjgl.opengl.Display.releaseContext();
+		} catch (LWJGLException e2) {
+			e2.printStackTrace();
+		}
 	}
 
 	@Override
