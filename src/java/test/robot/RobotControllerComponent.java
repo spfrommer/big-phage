@@ -30,9 +30,11 @@ public class RobotControllerComponent extends Component implements CompleteListe
 	private MVector m_leftForce;
 	private MVector m_rightForce;
 
-	private static final float PROPORTIONAL_GAIN = 0.1f;
+	private static final float PROPORTIONAL_GAIN = 0.2f;
+	private static final float INTEGRAL_GAIN = 0.2f;
 	private static final float DERIVATIVE_GAIN = 0.1f;
 	private MVector m_lastCOM;
+	private MVector m_integralCOM = new MVector(0, 0);
 
 	private static final float GRAVITY = 10f;
 
@@ -137,12 +139,17 @@ public class RobotControllerComponent extends Component implements CompleteListe
 
 	private MVector getDesiredGaF(MVector com, float totalMass, float time) {
 		Matrix comDerivative = com.subtract(m_lastCOM).scalarMultiply(1 / time);
+		m_integralCOM = m_integralCOM.add(com).toVector();
 
 		// since desired com and com derivative are 0 for balancing problem, the equations are simplified to remove
 		// these two terms
 		Matrix proportional = com.scalarMultiply(-PROPORTIONAL_GAIN);
 		Matrix derivative = comDerivative.scalarMultiply(-DERIVATIVE_GAIN);
-		Matrix userTaskForce = proportional.add(derivative);
+		Matrix integral = comDerivative.scalarMultiply(-INTEGRAL_GAIN);
+		System.out.println("Proportional: \n" + proportional);
+		System.out.println("Derivative: \n" + derivative);
+		System.out.println("Integral: \n" + integral);
+		Matrix userTaskForce = proportional.add(derivative).add(integral);
 
 		m_lastCOM = com;
 
@@ -193,14 +200,14 @@ public class RobotControllerComponent extends Component implements CompleteListe
 
 			float torque = r.crossProduct(force);
 
-			System.out.println(torque);
+			// System.out.println(torque);
 			joint.setMaxMotorTorque(Math.abs(torque));
 			joint.setMotorSpeed(-torque * 1000);
 			// System.out.println("Joint position: \n" + jPos);
 			// System.out.println("Contact point position: \n" + cPos);
 			// System.out.println("R: \n" + r);
 
-			System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+			// System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 		}
 
 		/*System.out.println("Desired CoP position: \n" + desCopPos);
