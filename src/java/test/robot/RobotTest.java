@@ -4,8 +4,9 @@ import java.util.Arrays;
 
 import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.BodyType;
-import org.jbox2d.dynamics.joints.Joint;
 import org.jbox2d.dynamics.joints.JointDef;
+import org.jbox2d.dynamics.joints.RevoluteJoint;
+import org.jbox2d.dynamics.joints.WeldJoint;
 
 import engine.commons.utils.Vector2f;
 import engine.core.exec.MaterialPool;
@@ -67,15 +68,17 @@ public class RobotTest extends SimplePhysicsGame {
 		// create the joints
 		JointDef legJoint1 = PhysicsFactory.makeRevoluteDef((Body) leg1.getData("sys_body"),
 				(Body) connector.getData("sys_body"), new Vector2f(0f, -0.5f), new Vector2f(-0.25f, 0f), false);
-		Joint joint1 = this.getPhysicsManager().createJoint(legJoint1);
+		RevoluteJoint joint1 = (RevoluteJoint) this.getPhysicsManager().createJoint(legJoint1);
+		joint1.enableMotor(true);
 
 		JointDef legJoint2 = PhysicsFactory.makeRevoluteDef((Body) leg2.getData("sys_body"),
 				(Body) connector.getData("sys_body"), new Vector2f(0f, -0.5f), new Vector2f(0.25f, 0f), false);
-		Joint joint2 = this.getPhysicsManager().createJoint(legJoint2);
+		RevoluteJoint joint2 = (RevoluteJoint) this.getPhysicsManager().createJoint(legJoint2);
+		joint2.enableMotor(true);
 
 		JointDef bodyJoint = PhysicsFactory.makeWeldDef((Body) connector.getData("sys_body"),
-				(Body) body.getData("sys_body"), new Vector2f(0f, 0f), new Vector2f(0f, -0.4f), false, 0.01f);
-		Joint joint3 = this.getPhysicsManager().createJoint(bodyJoint);
+				(Body) body.getData("sys_body"), new Vector2f(0f, 0f), new Vector2f(0f, -0.4f), false, -0.3f);
+		WeldJoint joint3 = (WeldJoint) this.getPhysicsManager().createJoint(bodyJoint);
 
 		// create the controller
 		RobotController controller = new RobotController(this.getWorld(), leg1, leg2, connector, body, joint1, joint2,

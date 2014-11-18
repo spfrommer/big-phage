@@ -22,6 +22,17 @@ public class MVector extends Matrix {
 		return this.getVal(1, 0);
 	}
 
+	/**
+	 * Returns the z dimension of the cross product of 2 vectors in the 2d plane (the x and y dimensions are obviously
+	 * zero).
+	 * 
+	 * @param vector
+	 * @return
+	 */
+	public float crossProduct(MVector vector) {
+		return (getX() * vector.getY() - getY() * vector.getX());
+	}
+
 	@Override
 	public String toString() {
 		return "[" + getX() + ", " + getY() + "]";
