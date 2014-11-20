@@ -7,6 +7,7 @@ import java.util.Arrays;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 
+import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.BodyType;
 import org.jbox2d.dynamics.joints.Joint;
@@ -48,7 +49,7 @@ public class RobotTest extends SimplePhysicsGame {
 				} catch (LWJGLException e1) {
 					e1.printStackTrace();
 				}
-				for (int i = 0; i < 5; i++)
+				for (int i = 0; i < 60; i++)
 					doStep();
 			}
 		});
@@ -70,27 +71,41 @@ public class RobotTest extends SimplePhysicsGame {
 		PhysicsGameFactory factory = this.getGameFactory();
 		ManagerFilter filter = this.getPhysicsManager().getCollisionFilter();
 
+		float headLength = 0.8f;
+		float halfHeadLength = 0.5f * headLength;
+		float headAngle = (float) Math.PI / 4;
+		float headWidth = 0.1f;
+		float connectorWidth = 0.5f;
+		float halfCWidth = 0.5f * connectorWidth;
+		float connectorHeight = 0.1f;
+		float legLength = 1f;
+		float halfLegLength = 0.5f * legLength;
+		float legWidth = 0.1f;
+
 		// make the robot
-		Entity leg1 = factory.createTriangularTexturedSolid(new Vector2f(-0.25f, 0.5f), (float) Math.PI, new Vector2f(
-				0.1f, 1f), BodyType.DYNAMIC, MaterialPool.materials.get("metalplatetriangle"));
+		Entity leg1 = factory.createTriangularTexturedSolid(new Vector2f(-halfCWidth, halfLegLength), (float) Math.PI,
+				new Vector2f(legWidth, legLength), BodyType.DYNAMIC, MaterialPool.materials.get("metalplatetriangle"));
 		leg1.setData("sys_groups", new TagList("robot"));
 		filter.addFilter(leg1, new ExclusiveGroupFilter(new TagList("robot")));
 		this.getWorld().addEntity(leg1);
 
-		Entity leg2 = factory.createTriangularTexturedSolid(new Vector2f(0.25f, 0.5f), (float) Math.PI, new Vector2f(
-				0.1f, 1f), BodyType.DYNAMIC, MaterialPool.materials.get("metalplatetriangle"));
+		Entity leg2 = factory.createTriangularTexturedSolid(new Vector2f(halfCWidth, halfLegLength), (float) Math.PI,
+				new Vector2f(legWidth, legLength), BodyType.DYNAMIC, MaterialPool.materials.get("metalplatetriangle"));
 		leg2.setData("sys_groups", new TagList("robot"));
 		filter.addFilter(leg2, new ExclusiveGroupFilter(new TagList("robot")));
 		this.getWorld().addEntity(leg2);
 
-		Entity connector = factory.createTexturedSolid(new Vector2f(0f, 1f), 0, new Vector2f(0.5f, 0.1f),
-				BodyType.DYNAMIC, MaterialPool.materials.get("metalplate"));
+		Entity connector = factory.createTexturedSolid(new Vector2f(0f, legLength), 0, new Vector2f(connectorWidth,
+				connectorHeight), BodyType.DYNAMIC, MaterialPool.materials.get("metalplate"));
 		connector.setData("sys_groups", new TagList("robot"));
 		filter.addFilter(connector, new ExclusiveGroupFilter(new TagList("robot")));
+		((Body) connector.getData("sys_body")).applyLinearImpulse(new Vec2(0.03f, 0), new Vec2(0f, legLength));
+
 		this.getWorld().addEntity(connector);
 
-		Entity head = factory.createTexturedSolid(new Vector2f(0f, 1.4f), 0, new Vector2f(0.1f, 0.4f),
-				BodyType.DYNAMIC, MaterialPool.materials.get("metalplate"));
+		Entity head = factory.createTexturedSolid(new Vector2f((float) (Math.cos(headAngle) * halfHeadLength),
+				legLength + (float) (Math.sin(headAngle) * halfHeadLength)), -headAngle, new Vector2f(headWidth,
+				headLength), BodyType.DYNAMIC, MaterialPool.materials.get("metalplate"));
 		head.setData("sys_groups", new TagList("robot"));
 		head.addComponent(new KeyboardRotateComponent());
 		filter.addFilter(head, new ExclusiveGroupFilter(new TagList("robot")));
@@ -98,18 +113,21 @@ public class RobotTest extends SimplePhysicsGame {
 
 		// create the joints
 		JointDef legJoint1 = PhysicsFactory.makeRevoluteDef((Body) leg1.getData("sys_body"),
-				(Body) connector.getData("sys_body"), new Vector2f(0f, -0.5f), new Vector2f(-0.25f, 0f), false);
+				(Body) connector.getData("sys_body"), new Vector2f(0f, -halfLegLength), new Vector2f(-halfCWidth, 0f),
+				false);
 		RevoluteJoint joint1 = (RevoluteJoint) this.getPhysicsManager().createJoint(legJoint1);
 		joint1.enableMotor(true);
 
 		JointDef legJoint2 = PhysicsFactory.makeRevoluteDef((Body) leg2.getData("sys_body"),
-				(Body) connector.getData("sys_body"), new Vector2f(0f, -0.5f), new Vector2f(0.25f, 0f), false);
+				(Body) connector.getData("sys_body"), new Vector2f(0f, -halfLegLength), new Vector2f(halfCWidth, 0f),
+				false);
 		RevoluteJoint joint2 = (RevoluteJoint) this.getPhysicsManager().createJoint(legJoint2);
 		joint2.enableMotor(true);
 
-		JointDef bodyJoint = PhysicsFactory.makeRevoluteDef((Body) connector.getData("sys_body"),
-				(Body) head.getData("sys_body"), new Vector2f(0f, 0f), new Vector2f(0f, -0.2f), false, -0f);
-		Joint joint3 = this.getPhysicsManager().createJoint(bodyJoint);
+		JointDef headJoint = PhysicsFactory.makeWeldDef((Body) connector.getData("sys_body"),
+				(Body) head.getData("sys_body"), new Vector2f(0f, 0f), new Vector2f(0f, -halfHeadLength), false,
+				-headAngle);
+		Joint joint3 = this.getPhysicsManager().createJoint(headJoint);
 
 		// create the controller
 		RobotController controller = new RobotController(this.getWorld(), leg1, leg2, connector, head, joint1, joint2,

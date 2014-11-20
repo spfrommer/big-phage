@@ -31,10 +31,11 @@ public class RobotControllerComponent extends Component implements CompleteListe
 	private MVector m_rightForce;
 
 	private static final float PROPORTIONAL_GAIN = 0.2f;
-	private static final float INTEGRAL_GAIN = 0.2f;
-	private static final float DERIVATIVE_GAIN = 0.1f;
+	private static final float INTEGRAL_GAIN = 0f;
+	private static final float DERIVATIVE_GAIN = 0.05f;
 	private MVector m_lastCOM;
 	private MVector m_integralCOM = new MVector(0, 0);
+	private MVector m_startingCOM;
 
 	private static final float GRAVITY = 10f;
 
@@ -70,6 +71,8 @@ public class RobotControllerComponent extends Component implements CompleteListe
 		Matrix posSum = leg1Pos.scalarMultiply(leg1Mass).add(leg2Pos.scalarMultiply(leg2Mass))
 				.add(connectorPos.scalarMultiply(connectorMass)).add(bodyPos.scalarMultiply(bodyMass));
 		MVector com = posSum.scalarMultiply(1 / totalMass).toVector();
+		if (m_startingCOM == null)
+			m_startingCOM = com;
 
 		// PI / 2 factor is because the rotation starts at north and goes counter clockwise
 		float contact1x = (float) Math.cos(leg1.getAngle() + Math.PI / 2) * legLenHalf;
@@ -119,20 +122,24 @@ public class RobotControllerComponent extends Component implements CompleteListe
 	private void implementAlgorithms(List<Body> bodies, List<RevoluteJoint> joints, List<MVector> jointPositions,
 			List<MVector> contactPositions, List<MVector> contactForces, MVector com, MVector gaf, float totalMass,
 			float time) {
-		float xpNumerator = 0;
+		/*float xpNumerator = 0;
 		float xpDenominator = 0;
 		for (int i = 0; i < contactPositions.size(); i++) {
 			MVector cPosition = contactPositions.get(i);
 			MVector cForce = contactForces.get(i);
 			xpNumerator += cPosition.getX() * cForce.getY();
 			xpDenominator += cForce.getY();
-		}
+		}*/
 
 		// Matrix cop = new Matrix(2, 1, new float[] { xpNumerator / xpDenominator, 1 });
 		// Matrix descop = new Matrix(2, 1, new float[] { 0f, 1f });
 
 		MVector desGaF = getDesiredGaF(com, totalMass, time);
 		MVector desCoP = getDesiredCoP(com, desGaF, totalMass);
+
+		System.out.println("Des center of pressure: \n" + desCoP + "\n");
+
+		System.out.println("Center of mass: \n" + com);
 
 		distributeForces(bodies, joints, jointPositions, contactPositions, com, desCoP, desGaF);
 	}
@@ -141,15 +148,17 @@ public class RobotControllerComponent extends Component implements CompleteListe
 		Matrix comDerivative = com.subtract(m_lastCOM).scalarMultiply(1 / time);
 		m_integralCOM = m_integralCOM.add(com).toVector();
 
-		// since desired com and com derivative are 0 for balancing problem, the equations are simplified to remove
+		// since desired com derivative is 0 and des com is starting com for a balancing problem, the equations are
+		// simplified to remove
 		// these two terms
-		Matrix proportional = com.scalarMultiply(-PROPORTIONAL_GAIN);
+		Matrix proportional = (com.subtract(m_startingCOM)).scalarMultiply(-PROPORTIONAL_GAIN);
 		Matrix derivative = comDerivative.scalarMultiply(-DERIVATIVE_GAIN);
 		Matrix integral = comDerivative.scalarMultiply(-INTEGRAL_GAIN);
-		System.out.println("Proportional: \n" + proportional);
-		System.out.println("Derivative: \n" + derivative);
-		System.out.println("Integral: \n" + integral);
+		// System.out.println("Proportional: \n" + proportional);
+		// System.out.println("Derivative: \n" + derivative);
+		// System.out.println("Integral: \n" + integral);
 		Matrix userTaskForce = proportional.add(derivative).add(integral);
+		System.out.println("Task force: \n" + userTaskForce);
 
 		m_lastCOM = com;
 
@@ -197,17 +206,20 @@ public class RobotControllerComponent extends Component implements CompleteListe
 			MVector force = new MVector(desContactForcesX.getVal(i, 0), desContactForcesZ.getVal(i, 0));
 
 			MVector r = cPos.subtract(jPos).toVector();
+			System.out.println("Joint " + i + ":");
+			System.out.println("\tR vector: \n\t" + r);
+			System.out.println("\tForce vector: \n\t" + force);
 
 			float torque = r.crossProduct(force);
 
-			// System.out.println(torque);
-			joint.setMaxMotorTorque(Math.abs(torque));
-			joint.setMotorSpeed(-torque * 1000);
-			// System.out.println("Joint position: \n" + jPos);
-			// System.out.println("Contact point position: \n" + cPos);
-			// System.out.println("R: \n" + r);
+			System.out.println("\tTorque: " + torque);
 
-			// System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+			// motor speeds are reversed
+			joint.setMaxMotorTorque(Math.abs(torque));
+			joint.setMotorSpeed(-(torque / Math.abs(torque)) * 1000000);
+
+			System.out.println("\tMax torque: " + joint.getMaxMotorTorque());
+			System.out.println("\tReal torque: " + joint.getMotorTorque(0.16666f));
 		}
 
 		/*System.out.println("Desired CoP position: \n" + desCopPos);
