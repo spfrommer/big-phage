@@ -71,8 +71,11 @@ public class RobotControllerComponent extends Component implements CompleteListe
 		Matrix posSum = leg1Pos.scalarMultiply(leg1Mass).add(leg2Pos.scalarMultiply(leg2Mass))
 				.add(connectorPos.scalarMultiply(connectorMass)).add(bodyPos.scalarMultiply(bodyMass));
 		MVector com = posSum.scalarMultiply(1 / totalMass).toVector();
-		if (m_startingCOM == null)
+		if (m_startingCOM == null) {
 			m_startingCOM = com;
+			// m_startingCOM = (new Matrix(2, 2, new float[] { 0f, 0f, 0f, 1f })).multiply(com).toVector();
+			// System.out.println(m_startingCOM);
+		}
 
 		// PI / 2 factor is because the rotation starts at north and goes counter clockwise
 		float contact1x = (float) Math.cos(leg1.getAngle() + Math.PI / 2) * legLenHalf;
@@ -91,6 +94,10 @@ public class RobotControllerComponent extends Component implements CompleteListe
 		float joint2y = (float) Math.sin(leg2.getAngle() - Math.PI / 2) * legLenHalf;
 		MVector joint2 = leg2Pos.add(new MVector(joint2x, joint2y)).subtract(com).toVector();
 
+		System.out.println("Contact1: " + contact1);
+		System.out.println("Contact2: " + contact2);
+		System.out.println("Joint1: " + joint1);
+		System.out.println("Joint2: " + joint2);
 		// System.out.println("Left leg: " + leg1Pos + " : " + leg1Mass);
 		// System.out.println("Right leg: " + leg2Pos + " : " + leg2Mass);
 		// System.out.println("Connector: " + connectorPos + " : " + connectorMass);
@@ -99,6 +106,7 @@ public class RobotControllerComponent extends Component implements CompleteListe
 		if (m_lastCOM == null) {
 			m_lastCOM = com;
 		} else if (m_leftForce != null && m_rightForce != null) {
+			System.out.println("Total mass: " + totalMass);
 			MVector gaf = m_leftForce.add(m_rightForce).toVector();
 			implementAlgorithms(Arrays.asList(leg1, leg2, connector, body), Arrays.asList(legJoint1, legJoint2),
 					Arrays.asList(joint1, joint2), Arrays.asList(contact1, contact2),
@@ -134,17 +142,20 @@ public class RobotControllerComponent extends Component implements CompleteListe
 		// Matrix cop = new Matrix(2, 1, new float[] { xpNumerator / xpDenominator, 1 });
 		// Matrix descop = new Matrix(2, 1, new float[] { 0f, 1f });
 
-		MVector desGaF = getDesiredGaF(com, totalMass, time);
-		MVector desCoP = getDesiredCoP(com, desGaF, totalMass);
+		MVector antigravityForce = new MVector(0, -totalMass * GRAVITY);
+		MVector userTaskForce = getUserTaskForce(com, totalMass, time);
+		MVector desGaF = userTaskForce.add(antigravityForce).toVector();
+		MVector desCoP = getDesiredCoP(com, userTaskForce, totalMass);
 
-		System.out.println("Des center of pressure: \n" + desCoP + "\n");
+		System.out.println("Des ground applied force: \n" + desGaF);
+		System.out.println("Des center of pressure: \n" + desCoP.add(com) + "\n");
 
 		System.out.println("Center of mass: \n" + com);
 
 		distributeForces(bodies, joints, jointPositions, contactPositions, com, desCoP, desGaF);
 	}
 
-	private MVector getDesiredGaF(MVector com, float totalMass, float time) {
+	private MVector getUserTaskForce(MVector com, float totalMass, float time) {
 		Matrix comDerivative = com.subtract(m_lastCOM).scalarMultiply(1 / time);
 		m_integralCOM = m_integralCOM.add(com).toVector();
 
@@ -157,14 +168,12 @@ public class RobotControllerComponent extends Component implements CompleteListe
 		// System.out.println("Proportional: \n" + proportional);
 		// System.out.println("Derivative: \n" + derivative);
 		// System.out.println("Integral: \n" + integral);
-		Matrix userTaskForce = proportional.add(derivative).add(integral);
+		Matrix userTaskForce = proportional.add(derivative).add(integral).scalarMultiply(-1);
 		System.out.println("Task force: \n" + userTaskForce);
 
 		m_lastCOM = com;
 
-		MVector antigravityForce = new MVector(0, totalMass * GRAVITY);
-
-		return userTaskForce.add(antigravityForce).toVector();
+		return userTaskForce.toVector();
 	}
 
 	/**
@@ -175,29 +184,42 @@ public class RobotControllerComponent extends Component implements CompleteListe
 	 * @param totalMass
 	 * @return
 	 */
-	private MVector getDesiredCoP(MVector com, MVector desiredGaF, float totalMass) {
+	private MVector getDesiredCoP(MVector com, MVector userTaskForce, float totalMass) {
 		float zp = -com.getY();
-		float numerator = zp * desiredGaF.getX();
-		float denominator = totalMass * GRAVITY + desiredGaF.getY();
+		float numerator = zp * userTaskForce.getX();
+		// should be negative desiredGaF.getY()?
+		float denominator = totalMass * GRAVITY + userTaskForce.getY();
 		float xp = numerator / denominator;
 		return new MVector(xp, zp);
 	}
 
 	private void distributeForces(List<Body> bodies, List<RevoluteJoint> joints, List<MVector> jointPositions,
 			List<MVector> contactPositions, MVector com, Matrix desCopPos, MVector desCopForce) {
+		System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 
 		// the Az matrix - we're really using the y coordinate though because we're in two dimensions
 		Matrix Az = stackX(contactPositions).transpose().augment();
+		System.out.println("AZ: \n" + Az);
 		Matrix Aztranspose = Az.transpose();
 
 		Matrix AzTimesTranspose = Az.multiply(Aztranspose);
+		System.out.println("AZ Times Transpose: \n" + AzTimesTranspose);
 		Matrix AzTTInvert = AzTimesTranspose.invert();
 
 		// same for both x and z(y) because we're ommiting the "depth" dimension
 		Matrix Asharpz = Aztranspose.multiply(AzTTInvert);
+		System.out.println("A Sharp Z: \n" + Asharpz);
 
-		Matrix desContactForcesZ = Asharpz.multiply(desCopPos.scalarMultiply(desCopForce.getY()));
-		Matrix desContactForcesX = Asharpz.multiply(desCopPos.scalarMultiply(desCopForce.getX()));
+		Matrix desCopPosX = new MVector(desCopPos.getVal(0, 0), 1);
+
+		Matrix desContactForcesZ = Asharpz.multiply(desCopPosX.scalarMultiply(desCopForce.getY()));
+		Matrix desContactForcesX = Asharpz.multiply(desCopPosX.scalarMultiply(desCopForce.getX()));
+
+		System.out.println("Des contact forces Z: \n" + desContactForcesZ);
+		System.out.println("Des cop position: \n" + desCopPosX);
+		System.out.println("Cop: \n" + desCopPos);
+
+		System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 
 		for (int i = 0; i < joints.size(); i++) {
 			RevoluteJoint joint = joints.get(i);

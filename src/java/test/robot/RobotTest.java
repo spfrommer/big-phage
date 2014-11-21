@@ -71,9 +71,9 @@ public class RobotTest extends SimplePhysicsGame {
 		PhysicsGameFactory factory = this.getGameFactory();
 		ManagerFilter filter = this.getPhysicsManager().getCollisionFilter();
 
-		float headLength = 0.8f;
+		float headLength = 0.4f;
 		float halfHeadLength = 0.5f * headLength;
-		float headAngle = (float) Math.PI / 4;
+		float headAngle = 0.01f;
 		float headWidth = 0.1f;
 		float connectorWidth = 0.5f;
 		float halfCWidth = 0.5f * connectorWidth;
@@ -103,8 +103,8 @@ public class RobotTest extends SimplePhysicsGame {
 
 		this.getWorld().addEntity(connector);
 
-		Entity head = factory.createTexturedSolid(new Vector2f((float) (Math.cos(headAngle) * halfHeadLength),
-				legLength + (float) (Math.sin(headAngle) * halfHeadLength)), -headAngle, new Vector2f(headWidth,
+		Entity head = factory.createTexturedSolid(new Vector2f((float) (Math.sin(headAngle) * halfHeadLength),
+				legLength + (float) (Math.cos(headAngle) * halfHeadLength)), -headAngle, new Vector2f(headWidth,
 				headLength), BodyType.DYNAMIC, MaterialPool.materials.get("metalplate"));
 		head.setData("sys_groups", new TagList("robot"));
 		head.addComponent(new KeyboardRotateComponent());
@@ -124,7 +124,7 @@ public class RobotTest extends SimplePhysicsGame {
 		RevoluteJoint joint2 = (RevoluteJoint) this.getPhysicsManager().createJoint(legJoint2);
 		joint2.enableMotor(true);
 
-		JointDef headJoint = PhysicsFactory.makeWeldDef((Body) connector.getData("sys_body"),
+		JointDef headJoint = PhysicsFactory.makeRevoluteDef((Body) connector.getData("sys_body"),
 				(Body) head.getData("sys_body"), new Vector2f(0f, 0f), new Vector2f(0f, -halfHeadLength), false,
 				-headAngle);
 		Joint joint3 = this.getPhysicsManager().createJoint(headJoint);
