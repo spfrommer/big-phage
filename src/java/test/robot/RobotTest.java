@@ -7,12 +7,11 @@ import java.util.Arrays;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 
-import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.BodyType;
 import org.jbox2d.dynamics.joints.Joint;
 import org.jbox2d.dynamics.joints.JointDef;
-import org.jbox2d.dynamics.joints.RevoluteJoint;
+import org.jbox2d.dynamics.joints.WheelJoint;
 import org.lwjgl.LWJGLException;
 
 import engine.commons.utils.Vector2f;
@@ -28,7 +27,11 @@ import engine.core.imp.render.MaterialFactory;
 import engine.core.presets.PhysicsGameFactory;
 import glcommon.Color;
 import glcommon.vector.Vector3f;
+import glextra.material.Material;
 import glextra.renderer.Light.PointLight;
+import gltools.input.Key;
+import gltools.input.KeyListener;
+import gltools.input.Keyboard;
 
 public class RobotTest extends SimplePhysicsGame {
 	public RobotTest() {
@@ -49,7 +52,7 @@ public class RobotTest extends SimplePhysicsGame {
 				} catch (LWJGLException e1) {
 					e1.printStackTrace();
 				}
-				for (int i = 0; i < 60; i++)
+				for (int i = 0; i < 3600; i++)
 					doStep();
 			}
 		});
@@ -71,9 +74,9 @@ public class RobotTest extends SimplePhysicsGame {
 		PhysicsGameFactory factory = this.getGameFactory();
 		ManagerFilter filter = this.getPhysicsManager().getCollisionFilter();
 
-		float headLength = 0.4f;
+		float headLength = 0.5f;
 		float halfHeadLength = 0.5f * headLength;
-		float headAngle = 0.01f;
+		float headAngle = -0.4f;
 		float headWidth = 0.1f;
 		float connectorWidth = 0.5f;
 		float halfCWidth = 0.5f * connectorWidth;
@@ -99,7 +102,8 @@ public class RobotTest extends SimplePhysicsGame {
 				connectorHeight), BodyType.DYNAMIC, MaterialPool.materials.get("metalplate"));
 		connector.setData("sys_groups", new TagList("robot"));
 		filter.addFilter(connector, new ExclusiveGroupFilter(new TagList("robot")));
-		((Body) connector.getData("sys_body")).applyLinearImpulse(new Vec2(0.03f, 0), new Vec2(0f, legLength));
+		connector.addComponent(new KeyboardImpulseComponent());
+		// ((Body) connector.getData("sys_body")).applyLinearImpulse(new Vec2(0.03f, 0.03f), new Vec2(0f, legLength));
 
 		this.getWorld().addEntity(connector);
 
@@ -107,24 +111,23 @@ public class RobotTest extends SimplePhysicsGame {
 				legLength + (float) (Math.cos(headAngle) * halfHeadLength)), -headAngle, new Vector2f(headWidth,
 				headLength), BodyType.DYNAMIC, MaterialPool.materials.get("metalplate"));
 		head.setData("sys_groups", new TagList("robot"));
-		head.addComponent(new KeyboardRotateComponent());
 		filter.addFilter(head, new ExclusiveGroupFilter(new TagList("robot")));
 		this.getWorld().addEntity(head);
 
 		// create the joints
-		JointDef legJoint1 = PhysicsFactory.makeRevoluteDef((Body) leg1.getData("sys_body"),
+		JointDef legJoint1 = PhysicsFactory.makeWheelDef((Body) leg1.getData("sys_body"),
 				(Body) connector.getData("sys_body"), new Vector2f(0f, -halfLegLength), new Vector2f(-halfCWidth, 0f),
-				false);
-		RevoluteJoint joint1 = (RevoluteJoint) this.getPhysicsManager().createJoint(legJoint1);
+				new Vector2f(0f, 1f), 10f, 1f, false);
+		WheelJoint joint1 = (WheelJoint) this.getPhysicsManager().createJoint(legJoint1);
 		joint1.enableMotor(true);
 
-		JointDef legJoint2 = PhysicsFactory.makeRevoluteDef((Body) leg2.getData("sys_body"),
+		JointDef legJoint2 = PhysicsFactory.makeWheelDef((Body) leg2.getData("sys_body"),
 				(Body) connector.getData("sys_body"), new Vector2f(0f, -halfLegLength), new Vector2f(halfCWidth, 0f),
-				false);
-		RevoluteJoint joint2 = (RevoluteJoint) this.getPhysicsManager().createJoint(legJoint2);
+				new Vector2f(0f, 1f), 7f, 1f, false);
+		WheelJoint joint2 = (WheelJoint) this.getPhysicsManager().createJoint(legJoint2);
 		joint2.enableMotor(true);
 
-		JointDef headJoint = PhysicsFactory.makeRevoluteDef((Body) connector.getData("sys_body"),
+		JointDef headJoint = PhysicsFactory.makeWeldDef((Body) connector.getData("sys_body"),
 				(Body) head.getData("sys_body"), new Vector2f(0f, 0f), new Vector2f(0f, -halfHeadLength), false,
 				-headAngle);
 		Joint joint3 = this.getPhysicsManager().createJoint(headJoint);
@@ -136,7 +139,7 @@ public class RobotTest extends SimplePhysicsGame {
 		this.getWorld().addEntity(controller);
 
 		// make the ground
-		Entity platform = factory.createTexturedSolid(new Vector2f(0f, -0.5f), 0f, new Vector2f(3f, 1f),
+		Entity platform = factory.createTexturedSolid(new Vector2f(0f, -0.5f), 0f, new Vector2f(10f, 1f),
 				BodyType.STATIC, MaterialPool.materials.get("metalplate"));
 		this.getWorld().addEntity(platform);
 
@@ -146,6 +149,25 @@ public class RobotTest extends SimplePhysicsGame {
 				new Color(1f, 1f, 1f), new Color(0.1f, 0.1f, 0.1f, 0.1f))));
 		light.addComponent(new LightComponent());
 		getWorld().addEntity(light);
+
+		getGameState().keyboard.addListener(new KeyListener() {
+			@Override
+			public void keyPressed(Keyboard k, Key key) {
+				if (k.getKey("B") == key) {
+					Material material = MaterialPool.materials.get("metalplate");
+					Entity box = getGameFactory().createTexturedSolid(
+							new Vector2f((float) (Math.random() - 0.5f) * 1f, 5f),
+							(float) (Math.random() * Math.PI * 2), new Vector2f(0.3f, 0.5f), 0.2f, BodyType.DYNAMIC,
+							material);
+					getWorld().addEntity(box);
+				}
+			}
+
+			@Override
+			public void keyReleased(Keyboard k, Key key) {
+
+			}
+		});
 
 		try {
 			org.lwjgl.opengl.Display.releaseContext();

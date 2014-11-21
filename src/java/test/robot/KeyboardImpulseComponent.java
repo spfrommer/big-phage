@@ -4,16 +4,17 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
 
 import engine.core.exec.GameState;
 import engine.core.frame.Component;
 import gltools.input.Keyboard;
 
-public class KeyboardRotateComponent extends Component {
+public class KeyboardImpulseComponent extends Component {
 	private static final Set<String> IDENTIFIERS = new HashSet<String>(Arrays.asList("sys_body"));
 
-	public KeyboardRotateComponent() {
+	public KeyboardImpulseComponent() {
 	}
 
 	@Override
@@ -22,11 +23,19 @@ public class KeyboardRotateComponent extends Component {
 		Keyboard keyboard = state.keyboard;
 
 		if (keyboard.isKeyPressed(keyboard.getKey("LEFT"))) {
-			body.applyAngularImpulse(0.01f);
+			body.applyLinearImpulse(new Vec2(-0.01f, 0f), body.getWorldCenter());
 		}
 
 		if (keyboard.isKeyPressed(keyboard.getKey("RIGHT"))) {
-			body.applyAngularImpulse(-0.01f);
+			body.applyLinearImpulse(new Vec2(0.01f, 0f), body.getWorldCenter());
+		}
+
+		if (keyboard.isKeyPressed(keyboard.getKey("UP"))) {
+			body.applyLinearImpulse(new Vec2(0f, 0.01f), body.getWorldCenter());
+		}
+
+		if (keyboard.isKeyPressed(keyboard.getKey("DOWN"))) {
+			body.applyLinearImpulse(new Vec2(0f, -0.01f), body.getWorldCenter());
 		}
 	}
 
@@ -34,5 +43,4 @@ public class KeyboardRotateComponent extends Component {
 	public Set<String> getDataIdentifiers() {
 		return IDENTIFIERS;
 	}
-
 }
