@@ -52,7 +52,7 @@ public class RobotTest extends SimplePhysicsGame {
 				} catch (LWJGLException e1) {
 					e1.printStackTrace();
 				}
-				for (int i = 0; i < 3600; i++)
+				for (int i = 0; i < 5000; i++)
 					doStep();
 			}
 		});
@@ -142,8 +142,9 @@ public class RobotTest extends SimplePhysicsGame {
 		this.getWorld().addEntity(controller);
 
 		// make the ground
-		Entity platform = factory.createTexturedSolid(new Vector2f(0f, -0.5f), 0f, new Vector2f(100f, 1f),
-				BodyType.STATIC, MaterialPool.materials.get("metalplate"));
+		Entity platform = factory.createTexturedSolid(new Vector2f(0f, -0.5f), 0f, new Vector2f(20f, 1f),
+				BodyType.KINEMATIC, MaterialPool.materials.get("metalplate"));
+		platform.addComponent(new KinematicRotateComponent());
 		this.getWorld().addEntity(platform);
 
 		// add the light
@@ -160,7 +161,7 @@ public class RobotTest extends SimplePhysicsGame {
 					Material material = MaterialPool.materials.get("metalplate");
 					Entity box = getGameFactory().createTexturedSolid(
 							new Vector2f((float) (Math.random() - 0.5f) * 1f, 5f),
-							(float) (Math.random() * Math.PI * 2), new Vector2f(0.3f, 0.5f), 0.2f, BodyType.DYNAMIC,
+							(float) (Math.random() * Math.PI * 2), new Vector2f(0.3f, 0.5f), 0.5f, BodyType.DYNAMIC,
 							material);
 					getWorld().addEntity(box);
 				}

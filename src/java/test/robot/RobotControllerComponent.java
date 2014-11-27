@@ -40,8 +40,8 @@ public class RobotControllerComponent extends Component implements CompleteListe
 	private static final float GRAVITY = 10f;
 	private static final float MAX_TORQUE = 1.5f;
 	// the gains for the verticalize joint
-	private static final float JOINT_PROPORTIONAL_FACTOR = 20f;
-	private static final float JOINT_DERIVATIVE_FACTOR = 2f;
+	private static final float JOINT_PROPORTIONAL_FACTOR = 10f;
+	private static final float JOINT_DERIVATIVE_FACTOR = 1f;
 
 	@Override
 	public void update(float time, GameState state) {
@@ -140,23 +140,29 @@ public class RobotControllerComponent extends Component implements CompleteListe
 	}
 
 	private void verticalJoint(WheelJoint joint, Body body, MVector com, float time) {
-		float angle = (float) Math.PI - body.getAngle();
+		float desAngle = (float) Math.PI - body.getAngle();
 		float twoPI = (float) Math.PI * 2;
-		float sign = angle / Math.abs(angle);
-		while (Math.abs(angle) > Math.PI) {
-			angle -= twoPI * sign;
+		float sign = desAngle / Math.abs(desAngle);
+		while (Math.abs(desAngle) > Math.PI) {
+			desAngle -= twoPI * sign;
 		}
 
 		float speed = joint.getJointSpeed();
 
-		// Matrix comDerivative = com.subtract(m_lastCOM).scalarMultiply(1 / time);
+		// MVector comDerivative = com.subtract(m_lastCOM).scalarMultiply(1 / time).toVector();
+		MVector comDerivative = new MVector(-0.5f, 0);
+		desAngle += comDerivative.getX() * 0.2f;
 
-		System.out.println("Dif angle: " + angle);
+		System.out.println("COM: \n" + com);
+		System.out.println("Last COM: \n" + m_lastCOM);
+		System.out.println("COM derivative: \n" + comDerivative);
+		System.out.println("Des angle: " + desAngle);
 		System.out.println("Speed: " + speed);
+		System.out.println();
 
 		joint.enableMotor(true);
 		joint.setMaxMotorTorque(MAX_TORQUE);
-		joint.setMotorSpeed(-angle * JOINT_PROPORTIONAL_FACTOR + speed * JOINT_DERIVATIVE_FACTOR);
+		joint.setMotorSpeed(-desAngle * JOINT_PROPORTIONAL_FACTOR + speed * JOINT_DERIVATIVE_FACTOR);
 	}
 
 	private void implementAlgorithms(List<Body> bodies, List<WheelJoint> joints, List<MVector> jointPositions,
