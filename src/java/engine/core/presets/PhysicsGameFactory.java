@@ -17,7 +17,7 @@ public class PhysicsGameFactory {
 	private PhysicsManager m_physics;
 
 	private static final float DEFAULT_DENSITY = 1.5f;
-	private static final float DEFAULT_FRICTION = 0.3f;
+	private static final float DEFAULT_FRICTION = 0.7f;
 	private static final float DEFAULT_RESTITUTION = 0.1f;
 
 	public PhysicsGameFactory(World world, PhysicsManager physics) {

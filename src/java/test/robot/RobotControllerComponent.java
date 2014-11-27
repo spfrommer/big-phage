@@ -30,7 +30,7 @@ public class RobotControllerComponent extends Component implements CompleteListe
 	private MVector m_leftForce;
 	private MVector m_rightForce;
 
-	private static final float PROPORTIONAL_GAIN = 0.5f;
+	private static final float PROPORTIONAL_GAIN = 1f;
 	private static final float INTEGRAL_GAIN = 0.2f;
 	private static final float DERIVATIVE_GAIN = 0.5f;
 	private MVector m_lastCOM;
@@ -38,7 +38,7 @@ public class RobotControllerComponent extends Component implements CompleteListe
 	private float m_startingCOMHeight = -1;
 
 	private static final float GRAVITY = 10f;
-	private static final float MAX_TORQUE = 1f;
+	private static final float MAX_TORQUE = 1.5f;
 	// the gains for the verticalize joint
 	private static final float JOINT_PROPORTIONAL_FACTOR = 20f;
 	private static final float JOINT_DERIVATIVE_FACTOR = 2f;
@@ -93,8 +93,6 @@ public class RobotControllerComponent extends Component implements CompleteListe
 		float joint2y = (float) Math.sin(leg2.getAngle() - Math.PI / 2) * legLenHalf;
 		MVector joint2 = leg2Pos.add(new MVector(joint2x, joint2y)).subtract(com).toVector();
 
-		verticalJoint(legJoint1, leg1);
-
 		if (m_lastCOM == null) {
 			m_lastCOM = com;
 		} else {
@@ -117,7 +115,7 @@ public class RobotControllerComponent extends Component implements CompleteListe
 				contactPositions.add(contact1);
 				contactForces.add(m_leftForce);
 			} else {
-				verticalJoint(legJoint1, leg1);
+				verticalJoint(legJoint1, leg1, com, time);
 			}
 			if (m_updatedRight) {
 				System.out.println("Updated right");
@@ -126,7 +124,7 @@ public class RobotControllerComponent extends Component implements CompleteListe
 				contactPositions.add(contact2);
 				contactForces.add(m_rightForce);
 			} else {
-				verticalJoint(legJoint2, leg2);
+				verticalJoint(legJoint2, leg2, com, time);
 			}
 
 			implementAlgorithms(bodies, joints, jointPositions, contactPositions, contactForces, com, gaf, totalMass,
@@ -137,9 +135,11 @@ public class RobotControllerComponent extends Component implements CompleteListe
 
 		m_updatedLeft = false;
 		m_updatedRight = false;
+
+		m_lastCOM = com;
 	}
 
-	private void verticalJoint(WheelJoint joint, Body body) {
+	private void verticalJoint(WheelJoint joint, Body body, MVector com, float time) {
 		float angle = (float) Math.PI - body.getAngle();
 		float twoPI = (float) Math.PI * 2;
 		float sign = angle / Math.abs(angle);
@@ -148,6 +148,8 @@ public class RobotControllerComponent extends Component implements CompleteListe
 		}
 
 		float speed = joint.getJointSpeed();
+
+		// Matrix comDerivative = com.subtract(m_lastCOM).scalarMultiply(1 / time);
 
 		System.out.println("Dif angle: " + angle);
 		System.out.println("Speed: " + speed);
@@ -223,8 +225,6 @@ public class RobotControllerComponent extends Component implements CompleteListe
 		// System.out.println("Integral: \n" + integral);
 		Matrix userTaskForce = proportional.add(derivative).add(integral).scalarMultiply(-1);
 		System.out.println("Task force: \n" + userTaskForce);
-
-		m_lastCOM = com;
 
 		return userTaskForce.toVector();
 	}

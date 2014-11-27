@@ -74,9 +74,9 @@ public class RobotTest extends SimplePhysicsGame {
 		PhysicsGameFactory factory = this.getGameFactory();
 		ManagerFilter filter = this.getPhysicsManager().getCollisionFilter();
 
-		float headLength = 0.01f;
+		float headLength = 0.2f;
 		float halfHeadLength = 0.5f * headLength;
-		float headAngle = -0.4f;
+		float headAngle = 0f;
 		float headWidth = 0.1f;
 		float connectorWidth = 0.5f;
 		float halfCWidth = 0.5f * connectorWidth;
