@@ -74,7 +74,7 @@ public class RobotTest extends SimplePhysicsGame {
 		PhysicsGameFactory factory = this.getGameFactory();
 		ManagerFilter filter = this.getPhysicsManager().getCollisionFilter();
 
-		float headLength = 0.5f;
+		float headLength = 0.01f;
 		float halfHeadLength = 0.5f * headLength;
 		float headAngle = -0.4f;
 		float headWidth = 0.1f;
@@ -84,6 +84,9 @@ public class RobotTest extends SimplePhysicsGame {
 		float legLength = 1f;
 		float halfLegLength = 0.5f * legLength;
 		float legWidth = 0.1f;
+		float jointFrequency = 10f;
+		float jointDampening = 0f;
+		float connectorDensity = 1.5f;
 
 		// make the robot
 		Entity leg1 = factory.createTriangularTexturedSolid(new Vector2f(-halfCWidth, halfLegLength), (float) Math.PI,
@@ -99,7 +102,7 @@ public class RobotTest extends SimplePhysicsGame {
 		this.getWorld().addEntity(leg2);
 
 		Entity connector = factory.createTexturedSolid(new Vector2f(0f, legLength), 0, new Vector2f(connectorWidth,
-				connectorHeight), BodyType.DYNAMIC, MaterialPool.materials.get("metalplate"));
+				connectorHeight), connectorDensity, BodyType.DYNAMIC, MaterialPool.materials.get("metalplate"));
 		connector.setData("sys_groups", new TagList("robot"));
 		filter.addFilter(connector, new ExclusiveGroupFilter(new TagList("robot")));
 		connector.addComponent(new KeyboardImpulseComponent());
@@ -117,13 +120,13 @@ public class RobotTest extends SimplePhysicsGame {
 		// create the joints
 		JointDef legJoint1 = PhysicsFactory.makeWheelDef((Body) leg1.getData("sys_body"),
 				(Body) connector.getData("sys_body"), new Vector2f(0f, -halfLegLength), new Vector2f(-halfCWidth, 0f),
-				new Vector2f(0f, 1f), 10f, 1f, false);
+				new Vector2f(0f, 1f), jointFrequency, jointDampening, false);
 		WheelJoint joint1 = (WheelJoint) this.getPhysicsManager().createJoint(legJoint1);
 		joint1.enableMotor(true);
 
 		JointDef legJoint2 = PhysicsFactory.makeWheelDef((Body) leg2.getData("sys_body"),
 				(Body) connector.getData("sys_body"), new Vector2f(0f, -halfLegLength), new Vector2f(halfCWidth, 0f),
-				new Vector2f(0f, 1f), 7f, 1f, false);
+				new Vector2f(0f, 1f), jointFrequency, jointDampening, false);
 		WheelJoint joint2 = (WheelJoint) this.getPhysicsManager().createJoint(legJoint2);
 		joint2.enableMotor(true);
 
@@ -139,7 +142,7 @@ public class RobotTest extends SimplePhysicsGame {
 		this.getWorld().addEntity(controller);
 
 		// make the ground
-		Entity platform = factory.createTexturedSolid(new Vector2f(0f, -0.5f), 0f, new Vector2f(10f, 1f),
+		Entity platform = factory.createTexturedSolid(new Vector2f(0f, -0.5f), 0f, new Vector2f(100f, 1f),
 				BodyType.STATIC, MaterialPool.materials.get("metalplate"));
 		this.getWorld().addEntity(platform);
 
