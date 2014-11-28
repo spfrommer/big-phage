@@ -1,12 +1,13 @@
 package engine.core.exec;
 
 import engine.core.frame.World;
+import engine.core.imp.render.MaterialFactory;
+import glcommon.util.ResourceLocator;
+import glcommon.util.ResourceLocator.ClasspathResourceLocator;
 import glextra.renderer.LWJGLRenderer2D;
 import glextra.renderer.Light.PointLight;
-import gltools.ResourceLocator;
-import gltools.ResourceLocator.ClasspathResourceLocator;
-import gltools.display.Display;
-import gltools.display.LWJGLDisplay;
+import gltools.display.Window;
+import gltools.gl.lwjgl.glfw.GLFWWindow;
 import gltools.input.Keyboard;
 import gltools.input.Mouse;
 
@@ -35,13 +36,13 @@ public abstract class Game {
 		m_state.renderer = LWJGLRenderer2D.getInstance();
 		float widthMeters = m_displayWidth / (m_pixelsPerMeter * 2);
 		float heightMeters = m_displayHeight / (m_pixelsPerMeter * 2);
-		m_state.renderer.init(m_state.display.getWidth(), m_state.display.getHeight(), -widthMeters, widthMeters,
-				heightMeters, -heightMeters);
+		m_state.renderer.init(widthMeters, widthMeters,
+				heightMeters, heightMeters, m_state.display);
 		readDevices(m_state.display, m_state);
 
-		PointLight.init();
+		PointLight.init(m_state.renderer.getGL());
 		init();
-		createMaterials();
+		createMaterials(new MaterialFactory(m_state.renderer));
 		onStart();
 
 		while (!m_state.keyboard.isKeyPressed(m_state.keyboard.getKey("ESCAPE")) && !m_state.display.closeRequested()) {
@@ -58,7 +59,7 @@ public abstract class Game {
 			m_state.renderer.finishGeometry();
 			m_state.renderer.finishLighted();
 			m_state.renderer.doLightingComputations();
-			m_state.display.update(m_fps);
+			m_state.display.update();
 		}
 		m_state.display.destroy();
 		System.exit(0);
@@ -66,7 +67,7 @@ public abstract class Game {
 
 	protected abstract void init();
 
-	public abstract void createMaterials();
+	public abstract void createMaterials(MaterialFactory factory);
 
 	public abstract void onStart();
 
@@ -90,14 +91,14 @@ public abstract class Game {
 		m_fps = fps;
 	}
 
-	private Display makeDisplay(String title) {
-		LWJGLDisplay display = new LWJGLDisplay(m_displayWidth, m_displayHeight, true);
+	private Window makeDisplay(String title) {
+		GLFWWindow display = new GLFWWindow(m_displayWidth, m_displayHeight);
 		display.setTitle(title);
 		display.init();
 		return display;
 	}
 
-	private void readDevices(Display display, GameState state) {
+	private void readDevices(Window display, GameState state) {
 		ResourceLocator locator = new ClasspathResourceLocator();
 
 		Mouse mouse = display.getMouse();

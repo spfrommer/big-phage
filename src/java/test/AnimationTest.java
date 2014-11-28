@@ -25,12 +25,12 @@ public class AnimationTest extends SimplePhysicsGame {
 	}
 
 	@Override
-	public void createMaterials() {
+	public void createMaterials(MaterialFactory factory) {
 		MaterialPool.materials.put("grassbackground",
-				MaterialFactory.createBasicMaterial("Textures/grassbackground.png"));
+				factory.createBasicMaterial("Textures/grassbackground.png"));
 
 		for (int r = 0; r < 100; r++) {
-			Material material = MaterialFactory.createBasicMaterial(new Color(r / 100f, 0f, 0f));
+			Material material = factory.createBasicMaterial(new Color(r / 100f, 0f, 0f));
 			MaterialPool.materials.put("red" + r, material);
 		}
 	}
