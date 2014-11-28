@@ -42,10 +42,10 @@ public class PendulumTest extends SimplePhysicsGame {
 		this.getWorld().addEntity(pendulum);
 
 		// make the ground
-		Entity platform = factory.createTexturedSolid(new Vector2f(0f, 0f), 0f, new Vector2f(3f, 1f),
-				BodyType.KINEMATIC, MaterialPool.materials.get("metalplate"));
+		Entity platform = factory.createTexturedSolid(new Vector2f(0f, 0f), 0f, new Vector2f(3f, 1f), BodyType.DYNAMIC,
+				MaterialPool.materials.get("metalplate"));
 		platform.setData("pen_pendulum", pendulum);
-		platform.addComponent(new KinematicBalancerComponent());
+		platform.addComponent(new DynamicBalancerComponent());
 		this.getWorld().addEntity(platform);
 
 		// create the joint
