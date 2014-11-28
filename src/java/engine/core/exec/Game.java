@@ -125,14 +125,7 @@ public abstract class Game {
 
 		Mouse mouse = display.getMouse();
 		Keyboard keyboard = display.getKeyboard();
-
-		try {
-			keyboard.readXMLKeyConfig("Config/Keyboard/lwjgl.xml", locator);
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
-
+		
 		state.keyboard = keyboard;
 		state.mouse = mouse;
 	}
