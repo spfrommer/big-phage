@@ -30,9 +30,9 @@ public class LiquidTest extends SimplePhysicsGame {
 	}
 
 	@Override
-	public void createMaterials() {
-		MaterialPool.materials.put("metalplate", MaterialFactory.createBasicMaterial("Textures/metalplate.png"));
-		MaterialPool.materials.put("waterdrop", MaterialFactory.createBasicMaterial("Textures/waterdrop.png"));
+	public void createMaterials(MaterialFactory factory) {
+		MaterialPool.materials.put("metalplate", factory.createBasicMaterial("Textures/metalplate.png"));
+		MaterialPool.materials.put("waterdrop", factory.createBasicMaterial("Textures/waterdrop.png"));
 	}
 
 	@Override

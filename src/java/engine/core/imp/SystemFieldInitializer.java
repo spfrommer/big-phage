@@ -35,7 +35,7 @@ public class SystemFieldInitializer implements FieldInitializer {
 		if (identifier.equals("sys_rotation"))
 			return 0f;
 		if (identifier.equals("sys_material"))
-			return MaterialFactory.createBasicMaterial();
+			return null;
 		if (identifier.equals("sys_dimensions"))
 			return new Vector2f(1, 1);
 		if (identifier.equals("sys_body"))

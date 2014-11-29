@@ -34,6 +34,8 @@ import gltools.input.KeyListener;
 import gltools.input.Keyboard;
 
 public class RobotTest extends SimplePhysicsGame {
+	private Object m_waitObject = new Object();
+	
 	public RobotTest() {
 		super("Robot test");
 		this.setAutoStep(false);
@@ -47,13 +49,9 @@ public class RobotTest extends SimplePhysicsGame {
 		button.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				try {
-					org.lwjgl.opengl.Display.makeCurrent();
-				} catch (LWJGLException e1) {
-					e1.printStackTrace();
+				synchronized(m_waitObject) {
+					m_waitObject.notifyAll();
 				}
-				for (int i = 0; i < 50000; i++)
-					doStep();
 			}
 		});
 		frame.setLocation(0, 0);
@@ -63,10 +61,10 @@ public class RobotTest extends SimplePhysicsGame {
 	}
 
 	@Override
-	public void createMaterials() {
-		MaterialPool.materials.put("metalplate", MaterialFactory.createBasicMaterial("Textures/metalplate.png"));
+	public void createMaterials(MaterialFactory factory) {
+		MaterialPool.materials.put("metalplate", factory.createBasicMaterial("Textures/metalplate.png"));
 		MaterialPool.materials.put("metalplatetriangle",
-				MaterialFactory.createBasicMaterial("Textures/metalplatetriangle.png"));
+				factory.createBasicMaterial("Textures/metalplatetriangle.png"));
 	}
 
 	@Override
@@ -172,11 +170,18 @@ public class RobotTest extends SimplePhysicsGame {
 
 			}
 		});
-
-		try {
-			org.lwjgl.opengl.Display.releaseContext();
-		} catch (LWJGLException e2) {
-			e2.printStackTrace();
+		
+		while(!getGameState().keyboard.isKeyPressed(getGameState().keyboard.getKey("ESCAPE"))
+				&& !getGameState().display.closeRequested()) {
+			try {
+				synchronized(m_waitObject) {
+					m_waitObject.wait();
+				}
+			} catch (InterruptedException e) {}
+			for (int i = 0; i < 3600; i++) {
+				System.out.println("Stepping!");
+				doStep();
+			}
 		}
 	}
 

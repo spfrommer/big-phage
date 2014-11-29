@@ -22,10 +22,10 @@ public class LayerTest extends SimplePhysicsGame {
 	}
 
 	@Override
-	public void createMaterials() {
-		MaterialPool.materials.put("metalplate", MaterialFactory.createBasicMaterial("Textures/metalplate.png"));
+	public void createMaterials(MaterialFactory factory) {
+		MaterialPool.materials.put("metalplate", factory.createBasicMaterial("Textures/metalplate.png"));
 		MaterialPool.materials.put("grassbackground",
-				MaterialFactory.createBasicMaterial("Textures/grassbackground.png", false, true));
+				factory.createBasicMaterial("Textures/grassbackground.png", false, true));
 	}
 
 	// LAYER 0 IS RESERVED FOR THE CAMERA, 1 FOR LIGHTS, 2 IS USUALLY
