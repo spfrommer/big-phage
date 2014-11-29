@@ -43,6 +43,7 @@ public class RobotControllerComponent extends Component implements CompleteListe
 	private static final float JOINT_PROPORTIONAL_FACTOR = 10f;
 	private static final float JOINT_DERIVATIVE_FACTOR = 1f;
 
+	// TODO: grf forces don't have to be calculated
 	@Override
 	public void update(float time, GameState state) {
 		m_lastTime = time;
@@ -98,6 +99,7 @@ public class RobotControllerComponent extends Component implements CompleteListe
 		} else {
 			System.out.println("Total mass: " + totalMass);
 			MVector gaf = new MVector(0f, 0f);
+
 			if (m_updatedLeft)
 				gaf = gaf.add(m_leftForce).toVector();
 			if (m_updatedRight)

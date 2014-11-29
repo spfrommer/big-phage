@@ -52,7 +52,7 @@ public class RobotTest extends SimplePhysicsGame {
 				} catch (LWJGLException e1) {
 					e1.printStackTrace();
 				}
-				for (int i = 0; i < 5000; i++)
+				for (int i = 0; i < 50000; i++)
 					doStep();
 			}
 		});
