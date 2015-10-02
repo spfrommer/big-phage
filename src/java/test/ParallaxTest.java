@@ -26,13 +26,13 @@ public class ParallaxTest extends SimplePhysicsGame {
 	}
 
 	@Override
-	public void createMaterials() {
+	public void createMaterials(MaterialFactory factory) {
 		MaterialPool.materials.put("starbackground1",
-				MaterialFactory.createBasicMaterial("Textures/starbackground1.png", false, true));
+				factory.createBasicMaterial("Textures/starbackground1.png", false, true));
 		MaterialPool.materials.put("starbackground2",
-				MaterialFactory.createBasicMaterial("Textures/starbackground2.png", false, true));
+				factory.createBasicMaterial("Textures/starbackground2.png", false, true));
 		MaterialPool.materials.put("starbackground3",
-				MaterialFactory.createBasicMaterial("Textures/starbackground3.png", false, true));
+				factory.createBasicMaterial("Textures/starbackground3.png", false, true));
 	}
 
 	// LAYER 0 IS RESERVED FOR THE CAMERA, 1 FOR LIGHTS, 2 IS USUALLY

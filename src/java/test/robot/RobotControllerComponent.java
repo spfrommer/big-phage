@@ -1,5 +1,6 @@
 package test.robot;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -9,8 +10,7 @@ import org.jbox2d.callbacks.ContactImpulse;
 import org.jbox2d.collision.Manifold;
 import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.contacts.Contact;
-import org.jbox2d.dynamics.joints.Joint;
-import org.jbox2d.dynamics.joints.RevoluteJoint;
+import org.jbox2d.dynamics.joints.WheelJoint;
 
 import engine.core.exec.GameState;
 import engine.core.frame.Component;
@@ -30,18 +30,22 @@ public class RobotControllerComponent extends Component implements CompleteListe
 	private MVector m_leftForce;
 	private MVector m_rightForce;
 
-	private static final float PROPORTIONAL_GAIN = 0.2f;
+	private static final float PROPORTIONAL_GAIN = 1f;
 	private static final float INTEGRAL_GAIN = 0.2f;
-	private static final float DERIVATIVE_GAIN = 0.1f;
+	private static final float DERIVATIVE_GAIN = 0.5f;
 	private MVector m_lastCOM;
 	private MVector m_integralCOM = new MVector(0, 0);
+	private float m_startingCOMHeight = -1;
 
 	private static final float GRAVITY = 10f;
+	private static final float MAX_TORQUE = 1.5f;
+	// the gains for the verticalize joint
+	private static final float JOINT_PROPORTIONAL_FACTOR = 10f;
+	private static final float JOINT_DERIVATIVE_FACTOR = 1f;
 
+	// TODO: grf forces don't have to be calculated
 	@Override
 	public void update(float time, GameState state) {
-		m_updatedLeft = false;
-		m_updatedRight = false;
 		m_lastTime = time;
 
 		float legLenHalf = 0.5f;
@@ -58,18 +62,20 @@ public class RobotControllerComponent extends Component implements CompleteListe
 		MVector connectorPos = new MVector(connector.getPosition().x, connector.getPosition().y);
 		float connectorMass = connector.getMass();
 
-		Body body = (Body) getData("rob_body");
-		MVector bodyPos = new MVector(body.getPosition().x, body.getPosition().y);
-		float bodyMass = body.getMass();
+		Body head = (Body) getData("rob_body");
+		MVector headPos = new MVector(head.getPosition().x, head.getPosition().y);
+		float bodyMass = head.getMass();
 
-		RevoluteJoint legJoint1 = (RevoluteJoint) getData("rob_legJoint1");
-		RevoluteJoint legJoint2 = (RevoluteJoint) getData("rob_legJoint2");
-		Joint bodyJoint = (Joint) getData("rob_bodyJoint");
+		WheelJoint legJoint1 = (WheelJoint) getData("rob_legJoint1");
+		WheelJoint legJoint2 = (WheelJoint) getData("rob_legJoint2");
 
 		float totalMass = leg1Mass + leg2Mass + connectorMass + bodyMass;
 		Matrix posSum = leg1Pos.scalarMultiply(leg1Mass).add(leg2Pos.scalarMultiply(leg2Mass))
-				.add(connectorPos.scalarMultiply(connectorMass)).add(bodyPos.scalarMultiply(bodyMass));
+				.add(connectorPos.scalarMultiply(connectorMass)).add(headPos.scalarMultiply(bodyMass));
 		MVector com = posSum.scalarMultiply(1 / totalMass).toVector();
+		if (m_startingCOMHeight == -1) {
+			m_startingCOMHeight = com.getY();
+		}
 
 		// PI / 2 factor is because the rotation starts at north and goes counter clockwise
 		float contact1x = (float) Math.cos(leg1.getAngle() + Math.PI / 2) * legLenHalf;
@@ -88,74 +94,147 @@ public class RobotControllerComponent extends Component implements CompleteListe
 		float joint2y = (float) Math.sin(leg2.getAngle() - Math.PI / 2) * legLenHalf;
 		MVector joint2 = leg2Pos.add(new MVector(joint2x, joint2y)).subtract(com).toVector();
 
-		// System.out.println("Left leg: " + leg1Pos + " : " + leg1Mass);
-		// System.out.println("Right leg: " + leg2Pos + " : " + leg2Mass);
-		// System.out.println("Connector: " + connectorPos + " : " + connectorMass);
-		// System.out.println("Body: " + bodyPos + " : " + bodyMass);
-
 		if (m_lastCOM == null) {
 			m_lastCOM = com;
-		} else if (m_leftForce != null && m_rightForce != null) {
-			MVector gaf = m_leftForce.add(m_rightForce).toVector();
-			implementAlgorithms(Arrays.asList(leg1, leg2, connector, body), Arrays.asList(legJoint1, legJoint2),
-					Arrays.asList(joint1, joint2), Arrays.asList(contact1, contact2),
-					Arrays.asList(m_leftForce, m_rightForce), com, gaf, totalMass, time);
-
-			/*System.out.println("Ground applied force: " + gaf);
-
+		} else {
 			System.out.println("Total mass: " + totalMass);
-			System.out.println("COM: " + com);
+			MVector gaf = new MVector(0f, 0f);
 
-			System.out.println("Left contact position: " + contact1);
-			System.out.println("Right contact position: " + contact2);
+			if (m_updatedLeft)
+				gaf = gaf.add(m_leftForce).toVector();
+			if (m_updatedRight)
+				gaf = gaf.add(m_rightForce).toVector();
+			List<Body> bodies = Arrays.asList(leg1, leg2, connector, head);
+			List<WheelJoint> joints = new ArrayList<WheelJoint>();
+			List<MVector> jointPositions = new ArrayList<MVector>();
+			List<MVector> contactPositions = new ArrayList<MVector>();
+			List<MVector> contactForces = new ArrayList<MVector>();
 
-			System.out.println("Left leg GRF: " + m_leftForce);
-			System.out.println("Right leg GRF: " + m_rightForce);*/
+			if (m_updatedLeft) {
+				System.out.println("Updated left");
+				joints.add(legJoint1);
+				jointPositions.add(joint1);
+				contactPositions.add(contact1);
+				contactForces.add(m_leftForce);
+			} else {
+				verticalJoint(legJoint1, leg1, com, time);
+			}
+			if (m_updatedRight) {
+				System.out.println("Updated right");
+				joints.add(legJoint2);
+				jointPositions.add(joint2);
+				contactPositions.add(contact2);
+				contactForces.add(m_rightForce);
+			} else {
+				verticalJoint(legJoint2, leg2, com, time);
+			}
 
-			System.out.println("---------------------------------------------------------");
+			implementAlgorithms(bodies, joints, jointPositions, contactPositions, contactForces, com, gaf, totalMass,
+					time);
 		}
+
+		System.out.println("---------------------------------------------------------");
+
+		m_updatedLeft = false;
+		m_updatedRight = false;
+
+		m_lastCOM = com;
 	}
 
-	private void implementAlgorithms(List<Body> bodies, List<RevoluteJoint> joints, List<MVector> jointPositions,
+	private void verticalJoint(WheelJoint joint, Body body, MVector com, float time) {
+		float desAngle = (float) Math.PI - body.getAngle();
+		float twoPI = (float) Math.PI * 2;
+		float sign = desAngle / Math.abs(desAngle);
+		while (Math.abs(desAngle) > Math.PI) {
+			desAngle -= twoPI * sign;
+		}
+
+		float speed = joint.getJointSpeed();
+
+		// MVector comDerivative = com.subtract(m_lastCOM).scalarMultiply(1 / time).toVector();
+		MVector comDerivative = new MVector(-0.5f, 0);
+		desAngle += comDerivative.getX() * 0.2f;
+
+		System.out.println("COM: \n" + com);
+		System.out.println("Last COM: \n" + m_lastCOM);
+		System.out.println("COM derivative: \n" + comDerivative);
+		System.out.println("Des angle: " + desAngle);
+		System.out.println("Speed: " + speed);
+		System.out.println();
+
+		joint.enableMotor(true);
+		joint.setMaxMotorTorque(MAX_TORQUE);
+		joint.setMotorSpeed(-desAngle * JOINT_PROPORTIONAL_FACTOR + speed * JOINT_DERIVATIVE_FACTOR);
+	}
+
+	private void implementAlgorithms(List<Body> bodies, List<WheelJoint> joints, List<MVector> jointPositions,
 			List<MVector> contactPositions, List<MVector> contactForces, MVector com, MVector gaf, float totalMass,
 			float time) {
-		float xpNumerator = 0;
-		float xpDenominator = 0;
-		for (int i = 0; i < contactPositions.size(); i++) {
-			MVector cPosition = contactPositions.get(i);
-			MVector cForce = contactForces.get(i);
-			xpNumerator += cPosition.getX() * cForce.getY();
-			xpDenominator += cForce.getY();
+		MVector antigravityForce = new MVector(0, -totalMass * GRAVITY);
+		MVector userTaskForce = getUserTaskForce(com, contactPositions, totalMass, time);
+		MVector desGaF = userTaskForce.add(antigravityForce).toVector();
+		MVector desCoP = getDesiredCoP(com, userTaskForce, totalMass);
+
+		System.out.println("Des ground applied force: \n" + desGaF);
+		System.out.println("Des center of pressure: \n" + desCoP.add(com) + "\n");
+
+		System.out.println("Center of mass: \n" + com);
+
+		if (contactPositions.size() >= 2) {
+			distributeForces(bodies, joints, jointPositions, contactPositions, com, desCoP, desGaF);
+		} else if (contactPositions.size() == 1) {
+			System.out.println("Only one contact position: " + joints.size());
+			WheelJoint joint = joints.get(0);
+			MVector jPos = jointPositions.get(0);
+			MVector cPos = contactPositions.get(0);
+
+			MVector r = cPos.subtract(jPos).toVector();
+
+			float torque = r.crossProduct(desGaF);
+			if (torque > 0) {
+				torque = Math.min(MAX_TORQUE, torque);
+			} else {
+				torque = Math.max(-MAX_TORQUE, torque);
+			}
+
+			System.out.println("\tTorque: " + torque);
+
+			joint.setMaxMotorTorque(Math.abs(torque));
+			joint.setMotorSpeed(-(torque / Math.abs(torque)) * 1000000);
 		}
-
-		// Matrix cop = new Matrix(2, 1, new float[] { xpNumerator / xpDenominator, 1 });
-		// Matrix descop = new Matrix(2, 1, new float[] { 0f, 1f });
-
-		MVector desGaF = getDesiredGaF(com, totalMass, time);
-		MVector desCoP = getDesiredCoP(com, desGaF, totalMass);
-
-		distributeForces(bodies, joints, jointPositions, contactPositions, com, desCoP, desGaF);
 	}
 
-	private MVector getDesiredGaF(MVector com, float totalMass, float time) {
+	private MVector getUserTaskForce(MVector com, List<MVector> contactPositions, float totalMass, float time) {
+		float sum = 0f;
+
+		for (MVector contact : contactPositions) {
+			sum += contact.getX() + com.getX();
+			System.out.println("X : " + contact.getX());
+		}
+
+		float average = sum / contactPositions.size();
+
+		MVector desCoM;
+		if (contactPositions.size() == 0)
+			desCoM = com;
+		else
+			desCoM = new MVector(average, m_startingCOMHeight);
+
+		System.out.println("Des COM:" + desCoM);
 		Matrix comDerivative = com.subtract(m_lastCOM).scalarMultiply(1 / time);
 		m_integralCOM = m_integralCOM.add(com).toVector();
 
-		// since desired com and com derivative are 0 for balancing problem, the equations are simplified to remove
-		// these two terms
-		Matrix proportional = com.scalarMultiply(-PROPORTIONAL_GAIN);
+		// desired com derivative is 0 and des com is starting com for a balancing problem
+		Matrix proportional = (com.subtract(desCoM)).scalarMultiply(-PROPORTIONAL_GAIN);
 		Matrix derivative = comDerivative.scalarMultiply(-DERIVATIVE_GAIN);
 		Matrix integral = comDerivative.scalarMultiply(-INTEGRAL_GAIN);
-		System.out.println("Proportional: \n" + proportional);
-		System.out.println("Derivative: \n" + derivative);
-		System.out.println("Integral: \n" + integral);
-		Matrix userTaskForce = proportional.add(derivative).add(integral);
+		// System.out.println("Proportional: \n" + proportional);
+		// System.out.println("Derivative: \n" + derivative);
+		// System.out.println("Integral: \n" + integral);
+		Matrix userTaskForce = proportional.add(derivative).add(integral).scalarMultiply(-1);
+		System.out.println("Task force: \n" + userTaskForce);
 
-		m_lastCOM = com;
-
-		MVector antigravityForce = new MVector(0, totalMass * GRAVITY);
-
-		return userTaskForce.add(antigravityForce).toVector();
+		return userTaskForce.toVector();
 	}
 
 	/**
@@ -166,55 +245,66 @@ public class RobotControllerComponent extends Component implements CompleteListe
 	 * @param totalMass
 	 * @return
 	 */
-	private MVector getDesiredCoP(MVector com, MVector desiredGaF, float totalMass) {
+	private MVector getDesiredCoP(MVector com, MVector userTaskForce, float totalMass) {
 		float zp = -com.getY();
-		float numerator = zp * desiredGaF.getX();
-		float denominator = totalMass * GRAVITY + desiredGaF.getY();
+		float numerator = zp * userTaskForce.getX();
+		float denominator = totalMass * GRAVITY + userTaskForce.getY();
 		float xp = numerator / denominator;
 		return new MVector(xp, zp);
 	}
 
-	private void distributeForces(List<Body> bodies, List<RevoluteJoint> joints, List<MVector> jointPositions,
+	private void distributeForces(List<Body> bodies, List<WheelJoint> joints, List<MVector> jointPositions,
 			List<MVector> contactPositions, MVector com, Matrix desCopPos, MVector desCopForce) {
+		System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 
 		// the Az matrix - we're really using the y coordinate though because we're in two dimensions
 		Matrix Az = stackX(contactPositions).transpose().augment();
+		System.out.println("AZ: \n" + Az);
 		Matrix Aztranspose = Az.transpose();
+		System.out.println("AZ transpose: \n" + Aztranspose);
 
 		Matrix AzTimesTranspose = Az.multiply(Aztranspose);
+		System.out.println("AZ Times Transpose: \n" + AzTimesTranspose);
 		Matrix AzTTInvert = AzTimesTranspose.invert();
 
 		// same for both x and z(y) because we're ommiting the "depth" dimension
 		Matrix Asharpz = Aztranspose.multiply(AzTTInvert);
+		System.out.println("A Sharp Z: \n" + Asharpz);
 
-		Matrix desContactForcesZ = Asharpz.multiply(desCopPos.scalarMultiply(desCopForce.getY()));
-		Matrix desContactForcesX = Asharpz.multiply(desCopPos.scalarMultiply(desCopForce.getX()));
+		Matrix desCopPosX = new MVector(desCopPos.getVal(0, 0), 1);
+
+		Matrix desContactForcesZ = Asharpz.multiply(desCopPosX.scalarMultiply(desCopForce.getY()));
+		Matrix desContactForcesX = Asharpz.multiply(desCopPosX.scalarMultiply(desCopForce.getX()));
+
+		System.out.println("Des contact forces Z: \n" + desContactForcesZ);
+		System.out.println("Des cop position: \n" + desCopPosX);
+		System.out.println("Cop: \n" + desCopPos);
+
+		System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 
 		for (int i = 0; i < joints.size(); i++) {
-			RevoluteJoint joint = joints.get(i);
+			WheelJoint joint = joints.get(i);
 			MVector jPos = jointPositions.get(i);
 			MVector cPos = contactPositions.get(i);
 			MVector force = new MVector(desContactForcesX.getVal(i, 0), desContactForcesZ.getVal(i, 0));
 
 			MVector r = cPos.subtract(jPos).toVector();
+			System.out.println("Joint " + i + ":");
+			System.out.println("\tR vector: \n\t" + r);
+			System.out.println("\tForce vector: \n\t" + force);
 
 			float torque = r.crossProduct(force);
+			if (torque > 0) {
+				torque = Math.min(MAX_TORQUE, torque);
+			} else {
+				torque = Math.max(-MAX_TORQUE, torque);
+			}
 
-			// System.out.println(torque);
+			System.out.println("\tTorque: " + torque);
+
 			joint.setMaxMotorTorque(Math.abs(torque));
-			joint.setMotorSpeed(-torque * 1000);
-			// System.out.println("Joint position: \n" + jPos);
-			// System.out.println("Contact point position: \n" + cPos);
-			// System.out.println("R: \n" + r);
-
-			// System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+			joint.setMotorSpeed(-(torque / Math.abs(torque)) * 1000000);
 		}
-
-		/*System.out.println("Desired CoP position: \n" + desCopPos);
-		System.out.println("Desired CoP force: \n" + desCopForce);
-
-		System.out.println("Vertical contact forces: \n" + desContactForcesZ);
-		System.out.println("Horizontal contact forces: \n" + desContactForcesX);*/
 	}
 
 	private Matrix stackVectors(List<MVector> vectors) {

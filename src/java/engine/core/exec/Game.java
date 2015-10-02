@@ -1,12 +1,13 @@
 package engine.core.exec;
 
 import engine.core.frame.World;
+import engine.core.imp.render.MaterialFactory;
+import glcommon.util.ResourceLocator;
+import glcommon.util.ResourceLocator.ClasspathResourceLocator;
 import glextra.renderer.LWJGLRenderer2D;
 import glextra.renderer.Light.PointLight;
-import gltools.ResourceLocator;
-import gltools.ResourceLocator.ClasspathResourceLocator;
-import gltools.display.Display;
-import gltools.display.LWJGLDisplay;
+import gltools.display.Window;
+import gltools.gl.lwjgl.glfw.GLFWWindow;
 import gltools.input.Keyboard;
 import gltools.input.Mouse;
 
@@ -22,6 +23,8 @@ public abstract class Game {
 	private int m_displayHeight;
 	private float m_pixelsPerMeter;
 
+	private boolean m_autoStep = true;
+
 	public Game(String title, int displayWidth, int displayHeight, float pixelsPerMeter) {
 		m_title = title;
 		m_fps = 60;
@@ -35,38 +38,48 @@ public abstract class Game {
 		m_state.renderer = LWJGLRenderer2D.getInstance();
 		float widthMeters = m_displayWidth / (m_pixelsPerMeter * 2);
 		float heightMeters = m_displayHeight / (m_pixelsPerMeter * 2);
-		m_state.renderer.init(m_state.display.getWidth(), m_state.display.getHeight(), -widthMeters, widthMeters,
-				heightMeters, -heightMeters);
+		m_state.renderer.init(widthMeters, widthMeters,
+				heightMeters, heightMeters, m_state.display);
 		readDevices(m_state.display, m_state);
 
-		PointLight.init();
+		PointLight.init(m_state.renderer.getGL());
 		init();
-		createMaterials();
+		createMaterials(new MaterialFactory(m_state.renderer));
 		onStart();
 
-		while (!m_state.keyboard.isKeyPressed(m_state.keyboard.getKey("ESCAPE")) && !m_state.display.closeRequested()) {
-			m_state.keyboard.poll();
-			m_state.mouse.poll();
-			m_state.renderer.clear();
-			m_state.renderer.startLighted();
-			m_state.renderer.startGeometry();
-
-			preUpdate();
-			m_current.update(1 / (float) m_fps, m_state);
-			postUpdate();
-
-			m_state.renderer.finishGeometry();
-			m_state.renderer.finishLighted();
-			m_state.renderer.doLightingComputations();
-			m_state.display.update(m_fps);
+		if (m_autoStep) {
+			while (!m_state.keyboard.isKeyPressed(m_state.keyboard.getKey("ESCAPE"))
+					&& !m_state.display.closeRequested()) {
+				doStep();
+			}
 		}
+	}
+
+	public void doStep() {
+		m_state.keyboard.poll();
+		m_state.mouse.poll();
+		m_state.renderer.clear();
+		m_state.renderer.startLighted();
+		m_state.renderer.startGeometry();
+
+		preUpdate();
+		m_current.update(1 / (float) m_fps, m_state);
+		postUpdate();
+
+		m_state.renderer.finishGeometry();
+		m_state.renderer.finishLighted();
+		m_state.renderer.doLightingComputations();
+		m_state.display.update();
+	}
+
+	public void close() {
 		m_state.display.destroy();
 		System.exit(0);
 	}
 
 	protected abstract void init();
 
-	public abstract void createMaterials();
+	public abstract void createMaterials(MaterialFactory factory);
 
 	public abstract void onStart();
 
@@ -90,26 +103,29 @@ public abstract class Game {
 		m_fps = fps;
 	}
 
-	private Display makeDisplay(String title) {
-		LWJGLDisplay display = new LWJGLDisplay(m_displayWidth, m_displayHeight, true);
+	/**
+	 * Sets whether or not the simulation should automatically update itself or whether updates are done manually with
+	 * the doStep() call.
+	 * 
+	 * @param autoStep
+	 */
+	public void setAutoStep(boolean autoStep) {
+		m_autoStep = autoStep;
+	}
+
+	private Window makeDisplay(String title) {
+		GLFWWindow display = new GLFWWindow(m_displayWidth, m_displayHeight);
 		display.setTitle(title);
 		display.init();
 		return display;
 	}
 
-	private void readDevices(Display display, GameState state) {
+	private void readDevices(Window display, GameState state) {
 		ResourceLocator locator = new ClasspathResourceLocator();
 
 		Mouse mouse = display.getMouse();
 		Keyboard keyboard = display.getKeyboard();
-
-		try {
-			keyboard.readXMLKeyConfig("Config/Keyboard/lwjgl.xml", locator);
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
-
+		
 		state.keyboard = keyboard;
 		state.mouse = mouse;
 	}

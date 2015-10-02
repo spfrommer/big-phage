@@ -12,6 +12,7 @@ import org.jbox2d.dynamics.BodyType;
 import org.jbox2d.dynamics.FixtureDef;
 import org.jbox2d.dynamics.joints.RevoluteJointDef;
 import org.jbox2d.dynamics.joints.WeldJointDef;
+import org.jbox2d.dynamics.joints.WheelJointDef;
 
 import engine.commons.utils.Vector2f;
 import engine.core.imp.physics.liquid.LiquidDef;
@@ -32,11 +33,19 @@ public class PhysicsFactory {
 		return revolute;
 	}
 
-	public static RevoluteJointDef makeRevoluteDef(Body b1, Body b2, Vector2f anchor1, Vector2f anchor2,
-			boolean collideConnected, float referenceAngle) {
-		RevoluteJointDef revolute = makeRevoluteDef(b1, b2, anchor1, anchor2, collideConnected);
-		revolute.referenceAngle = referenceAngle;
-		return revolute;
+	public static WheelJointDef makeWheelDef(Body b1, Body b2, Vector2f anchor1, Vector2f anchor2, Vector2f axis,
+			float frequencyHz, float dampingRatio, boolean collideConnected) {
+		WheelJointDef wheel = new WheelJointDef();
+		wheel.bodyA = b1;
+		wheel.bodyB = b2;
+		wheel.localAnchorA.set(anchor1.x, anchor1.y);
+		wheel.localAnchorB.set(anchor2.x, anchor2.y);
+		wheel.localAxisA.set(axis.x, axis.y);
+		wheel.dampingRatio = dampingRatio;
+		wheel.frequencyHz = frequencyHz;
+		wheel.collideConnected = collideConnected;
+
+		return wheel;
 	}
 
 	public static WeldJointDef makeWeldDef(Body b1, Body b2, Vector2f anchor1, Vector2f anchor2,

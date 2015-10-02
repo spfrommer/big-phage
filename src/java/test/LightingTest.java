@@ -22,8 +22,8 @@ public class LightingTest extends SimplePhysicsGame {
 	}
 
 	@Override
-	public void createMaterials() {
-		MaterialPool.materials.put("metalplate", MaterialFactory.createBasicMaterial("Textures/metalplate.png"));
+	public void createMaterials(MaterialFactory factory) {
+		MaterialPool.materials.put("metalplate", factory.createBasicMaterial("Textures/metalplate.png"));
 	}
 
 	@Override
